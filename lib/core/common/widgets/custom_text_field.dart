@@ -114,3 +114,12 @@ class CustomTextField extends StatelessWidget {
     );
   }
 }
+
+/// example
+// CustomTextField(
+// controller: myController,
+// hintText: "Enter email",
+// suffixIcon: Icon(Icons.email),
+// validator: (value) =>
+// value != null && value.contains("@") ? null : "Invalid email",
+// )

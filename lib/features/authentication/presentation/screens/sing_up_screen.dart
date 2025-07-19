@@ -14,7 +14,7 @@ import 'package:get/get.dart';
 class SignUpScreen extends StatelessWidget {
    SignUpScreen({super.key});
 
-   final SingUpController controller = Get.put(SingUpController());
+   final SignUpController controller = Get.put(SignUpController());
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class SignUpScreen extends StatelessWidget {
                     SizedBox(height: 12.h),
                     CustomTextField(
                       hintText: 'Enter your full name',
-                      controller: controller.nameText,
+                      controller: controller.nameTEController,
                     ),
                     SizedBox(height: 16.h),
                     CustomText(text: 'Business Name',
@@ -54,7 +54,7 @@ class SignUpScreen extends StatelessWidget {
                     SizedBox(height: 12.h),
                     CustomTextField(
                       hintText: 'Enter your business name',
-                      controller: controller.businessNameText,
+                      controller: controller.nameTEController,
                     ),
                     SizedBox(height: 16.h),
                     CustomText(text: 'Email',
@@ -64,7 +64,7 @@ class SignUpScreen extends StatelessWidget {
                     SizedBox(height: 12.h),
                     CustomTextField(
                       hintText: 'Enter your email address',
-                      controller: controller.emailText,
+                      controller: controller.emailTEController,
                     ),
                     SizedBox(height: 16.h),
                     CustomText(text: 'Phone Number',
@@ -74,7 +74,7 @@ class SignUpScreen extends StatelessWidget {
                     SizedBox(height: 12.h),
                     CustomTextField(
                       hintText: 'Enter your phone number',
-                      controller: controller.phoneText,
+                      controller: controller.emailTEController,
                     ),
                     SizedBox(height: 16.h),
                     CustomText(text: 'Password',
@@ -85,15 +85,15 @@ class SignUpScreen extends StatelessWidget {
                     Obx(() {
                       return CustomTextField(
                         hintText: 'Enter your password',
-                        controller: controller.passwordText,
-                        obscureText: controller.obSecureText.value,
+                        controller: controller.passwordTEController,
+                        obscureText: controller.isPasswordVisible.value,
                         suffixIcon: GestureDetector(
                           onTap:
                               () =>
-                          controller.obSecureText.value =
-                          !controller.obSecureText.value,
+                          controller.isPasswordVisible.value =
+                          !controller.isPasswordVisible.value,
                           child:
-                          controller.obSecureText.value
+                          controller.isPasswordVisible.value
                               ? Icon(
                             Icons.visibility_off_outlined,
                             color: Colors.grey,
@@ -110,7 +110,7 @@ class SignUpScreen extends StatelessWidget {
                     CustomButton(
                         text: 'Create Account',
                         onTap: () {
-                          _accountCreateSuccess(context);
+                          //_accountCreateSuccess(context);
                         }),
                     SizedBox(height: 18.h),
 
@@ -131,37 +131,6 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-   Future<void> _accountCreateSuccess(BuildContext context) {
-     return showModalBottomSheet(
-       context: context,
-       backgroundColor: AppColors.textWhite,
-       shape: RoundedRectangleBorder(
-         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-       ),
-       builder: (context) {
-         return Container(
-           padding: EdgeInsets.only(top: 32,bottom: 46, left: 20,right: 20),
-           width: double.infinity,
-           child: Column(
-             mainAxisAlignment: MainAxisAlignment.center,
-             crossAxisAlignment: CrossAxisAlignment.center,
-             children: [
-               Image.asset(LogoPath.accountSuccess,width: 138.w,height: 138.h),
-               SizedBox(height: 20.h),
-               CustomText(text: 'Account Successfully Created!',fontSize: 20.sp,fontWeight: FontWeight.w700, color: AppColors.textBold),
-               SizedBox(height: 12.h),
-               CustomText(text: 'You’ve successfully create your account? Please login to your account.',textAlign: TextAlign.center,fontSize: 14.sp,fontWeight: FontWeight.w400, color: AppColors.textGrey),
-               Spacer(),
-               CustomButton(
-                   text: 'Login Now',
-                   onTap: (){
-                     Get.offAllNamed(AppRoute.loginScreen);
-                   })
-             ],
-           ),
-         );
-       },
-     );
-   }
+
 
 }

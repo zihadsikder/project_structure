@@ -27,6 +27,7 @@ dependencies:
   flutter_svg:
   pinput:
   dotted_line: ^3.2.3
+  flutter_spinkit:
 
 dev_dependencies:
   flutter_test:

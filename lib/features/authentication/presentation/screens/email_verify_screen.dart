@@ -3,7 +3,6 @@ import 'package:gat/core/common/widgets/custom_button.dart';
 import 'package:gat/core/common/widgets/custom_text_field.dart';
 import 'package:gat/core/utils/constants/app_sizer.dart';
 import 'package:gat/features/authentication/controllers/reset_password_controller.dart';
-import 'package:gat/routes/app_routes.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/widgets/custom_text.dart';
 import '../../../../core/utils/constants/app_colors.dart';
@@ -42,7 +41,7 @@ class EmailVerifyScreen extends StatelessWidget {
                 CustomButton(
                     text: 'Continue',
                     onTap: (){
-                      Get.toNamed(AppRoute.resetOtpVerifyScreen);
+                      //Get.toNamed(AppRoute.resetOtpVerifyScreen);
                     })
               ],
             ),

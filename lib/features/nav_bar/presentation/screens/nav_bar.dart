@@ -47,15 +47,15 @@ class NavBar extends GetView<NavBarController> {
 
               ),
               _buildNavItem(
-                iconPath: IconPath.catalog, label: 'Catalog',
+                iconPath: IconPath.home, label: 'Catalog',
 
               ),
               _buildNavItem(
-                iconPath: IconPath.order, label: 'Orders',
+                iconPath: IconPath.home, label: 'Orders',
 
               ),
               _buildNavItem(
-                iconPath: IconPath.tens, label: 'GAT Tens',
+                iconPath: IconPath.home, label: 'GAT Tens',
               ),
             ],
           ),

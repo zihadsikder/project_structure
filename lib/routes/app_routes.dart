@@ -1,7 +1,7 @@
 
 import 'package:gat/features/home/presentaion/screens/home_screen.dart';
 import 'package:gat/features/authentication/presentation/screens/email_verify_screen.dart';
-import 'package:gat/features/authentication/presentation/screens/reset_otp_verify_screen.dart';
+
 import 'package:gat/features/authentication/presentation/screens/reset_password_screen.dart';
 import 'package:gat/features/authentication/presentation/screens/verify_code_screen.dart';
 
@@ -23,7 +23,7 @@ class AppRoute {
 
 
   static String emailVerifyScreen = "/emailVerifyScreen";
-  static String resetOtpVerifyScreen = "/resetOtpVerifyScreen";
+
   static String resetPasswordScreen = "/resetPasswordScreen";
   static String verifyCodeScreen = "/verifyCodeScreen";
 
@@ -48,7 +48,7 @@ class AppRoute {
     GetPage(name: loginScreen, page: () =>  LoginScreen()),
     GetPage(name: signUpScreen, page:() =>  SignUpScreen()),
     GetPage(name: emailVerifyScreen, page:() =>  EmailVerifyScreen()),
-    GetPage(name: resetOtpVerifyScreen, page:() =>  ResetOtpVerifyScreen()),
+
     GetPage(name: resetPasswordScreen, page:() =>  ResetPasswordScreen()),
     GetPage(name: verifyCodeScreen, page:() =>  VerifyCodeScreen()),
     GetPage(name: navBar, page:() =>  NavBar()),

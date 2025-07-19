@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:gat/core/utils/constants/app_sizer.dart';
 import 'package:gat/features/authentication/controllers/verify_controller.dart';
 import 'package:gat/routes/app_routes.dart';
-import 'package:get/get_core/src/get_main.dart';
+
 import 'package:pinput/pinput.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/widgets/custom_button.dart';
@@ -14,7 +14,7 @@ import '../../../../core/utils/constants/logo_path.dart';
 class VerifyCodeScreen extends StatelessWidget {
    VerifyCodeScreen({super.key});
 
-   final VerifyController controller = Get.put(VerifyController());
+   final OtpController controller = Get.put(OtpController());
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class VerifyCodeScreen extends StatelessWidget {
               alignment: Alignment.center,
               child: Pinput(
                 length: 6,
-                controller: controller.otpText,
+                controller: controller.otpTEController,
                 defaultPinTheme: PinTheme(
                   width: 48.w,
                   height: 48.h,

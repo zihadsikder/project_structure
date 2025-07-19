@@ -1,81 +1,108 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../utils/constants/app_colors.dart';
-import '../../utils/constants/app_sizes.dart';
-
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
   final Widget? prefixIcon;
-  final Widget? nextIcon;
-  final Widget? child; // Added child parameter
+  final Widget? suffixIcon;
+  final Widget? child;
   final EdgeInsetsGeometry? padding;
   final BorderRadius? borderRadius;
-  final Color? color; // Added color parameter (button color)
-  final Color? textColor; // Added textColor parameter (text color)
+  final dynamic backgroundColor; // Can be Color or Gradient
+  final Color? textColor;
+  final bool isOutline;
+  final Color? borderColor;
+  final TextStyle? customTextStyle;
+  final double? width;
+  final double? height;
+  final bool isUpperCase;
+  final double? elevation;
+  final bool enableShadow;
 
   const CustomButton({
     super.key,
     required this.text,
     required this.onTap,
     this.prefixIcon,
-    this.nextIcon,
-    this.child, // Child widget is passed as an optional parameter
+    this.suffixIcon,
+    this.child,
     this.padding,
     this.borderRadius,
-    this.color, // Optional color parameter
-    this.textColor, // Optional text color parameter
+    this.backgroundColor,
+    this.textColor,
+    this.isOutline = false,
+    this.borderColor,
+    this.customTextStyle,
+    this.width,
+    this.height,
+    this.isUpperCase = true,
+    this.elevation,
+    this.enableShadow = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final BorderRadius effectiveBorderRadius = borderRadius ?? BorderRadius.circular(12);
+    final bool hasGradient = backgroundColor is Gradient;
+    final Color effectiveTextColor = isOutline
+        ? (textColor ?? Theme.of(context).primaryColor)
+        : (textColor ?? Colors.white);
+
     return Material(
-      color: color ?? AppColors.primary, // Use the provided color or the default color
-      borderRadius: borderRadius ?? BorderRadius.circular(24),
+      color: Colors.transparent,
+      borderRadius: effectiveBorderRadius,
+      elevation: elevation ?? 0,
       child: InkWell(
-        splashColor: Colors.white.withOpacity(0.5),
-        borderRadius: borderRadius ?? BorderRadius.circular(12),
         onTap: onTap,
+        borderRadius: effectiveBorderRadius,
+        splashColor: Colors.white.withOpacity(0.1),
         child: Container(
-          width: double.infinity,
-          padding: padding ?? EdgeInsets.symmetric(vertical: getHeight(17)),
+          width: width ?? double.infinity,
+          height: height,
+          padding: padding ?? const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           decoration: BoxDecoration(
-            borderRadius: borderRadius ?? BorderRadius.circular(12),
+            gradient: hasGradient ? backgroundColor : null,
+            color: !hasGradient ? backgroundColor : null,
+            borderRadius: effectiveBorderRadius,
+            border: isOutline
+                ? Border.all(color: borderColor ?? Theme.of(context).primaryColor)
+                : null,
+            boxShadow: enableShadow
+                ? [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                offset: const Offset(0, 4),
+                blurRadius: 8,
+              ),
+            ]
+                : [],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               if (prefixIcon != null) ...[
-                const SizedBox(),
-                SizedBox(
-                  height: getHeight(22),
-                  width: getWidth(22),
-                  child: prefixIcon!,
-                ),
+                prefixIcon!,
+                const SizedBox(width: 8),
               ],
-              SizedBox(width: getWidth(8)),
-              // Display text if no child is passed
-              if (child == null) ...[
-                Text(
-                  text,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: getWidth(16),
-                    fontWeight: FontWeight.w600,
-                    color: textColor ?? AppColors.textWhite, // Use the provided text color or the default color
+              if (child == null)
+                Flexible(
+                  child: Text(
+                    isUpperCase ? text.toUpperCase() : text,
+                    textAlign: TextAlign.center,
+                    style: customTextStyle ??
+                        GoogleFonts.montserrat(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: effectiveTextColor,
+                        ),
                   ),
                 ),
-              ],
-              // Display child if passed
-              if (child != null) ...[
-                child!,
-              ],
-              if (nextIcon != null) ...[
-                SizedBox(
-                  width: getWidth(25),
-                  child: nextIcon!,
-                ),
+              if (child != null) child!,
+              if (suffixIcon != null) ...[
+                const SizedBox(width: 8),
+                suffixIcon!,
               ],
             ],
           ),
