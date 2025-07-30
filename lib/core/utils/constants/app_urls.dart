@@ -13,13 +13,17 @@ class AppUrls {
   static const String verifyForgetPasswordOtp =
       '$_baseUrl/auth/verify-otp';
   static const String resetPassword = '$_baseUrl/auth/reset-password';
-  //static const String updateUserPassword = '$_baseUrl/auth/change-password';
+  static const String changePassword = '$_baseUrl/auth/change-password';
   static const String updateProfile = '$_baseUrl/auth/profile';
   static const String updateLocation = '$_baseUrl/auth/update/user-location';
-  static const String createActivity = '$_baseUrl/workout-activities';
+
 
 
   /// get Api
   static const String getUserProfile = '$_baseUrl/auth/profile';
-  static const String getActivity = '$_baseUrl/workout-activities/my-activities';
+
+
+
+  static const String deleteUserProfile = '$_baseUrl/auth/profile';
+
 }

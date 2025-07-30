@@ -20,6 +20,7 @@ class CustomTextField extends StatelessWidget {
   final int? maxLines;
   final InputBorder? focusedBorder;
   final Color? containerColor;
+  final Color? fillColor;
   final Color? hintTextColor; // Color for hint text
   final Color? borderColor; // Color for hint text
   final double? hintTextSize; // Font size for hint text
@@ -52,7 +53,8 @@ class CustomTextField extends StatelessWidget {
     this.hintTextSize = 16, // Default font size
     this.suffixText, // Nullable suffix text
     this.suffixTextStyle, // Nullable suffix text style
-    this.validator, // Nullable validator function
+    this.validator,
+    this.fillColor = Colors.white, // Nullable validator function
   });
 
   @override
@@ -101,7 +103,7 @@ class CustomTextField extends StatelessWidget {
             fontWeight: FontWeight.w400,
             color: hintTextColor ?? AppColors.backgroundDark, // Use dynamic color, default to textSecondary
           ),
-          fillColor: Colors.white,
+          fillColor: fillColor,
           border: border,
           focusedBorder: focusedBorder,
           focusedErrorBorder: focusedBorder,
