@@ -24,10 +24,18 @@ dependencies:
   cupertino_icons: ^1.0.8
   # State Management
   get: ^4.6.6
+  gap: ^3.0.1
   flutter_svg:
   pinput:
   dotted_line: ^3.2.3
   flutter_spinkit:
+  image_picker: ^1.1.2
+  cached_network_image: ^3.4.1
+  fluttertoast: ^8.2.12
+  percent_indicator: ^4.2.5
+  permission_handler:
+  firebase_messaging:
+  flutter_local_notifications:
 
 dev_dependencies:
   flutter_test:
