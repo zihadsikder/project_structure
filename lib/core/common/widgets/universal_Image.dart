@@ -7,6 +7,7 @@ class UniversalImage extends StatelessWidget {
   final double? height;
   final double? width;
   final double borderRadius;
+  final bool isCircular;
   final BoxFit fit;
 
   /// Constructor
@@ -16,6 +17,7 @@ class UniversalImage extends StatelessWidget {
     this.height,
     this.width,
     this.borderRadius = 100,
+    this.isCircular = false, // NEW
     this.fit = BoxFit.cover,
   });
 
@@ -49,19 +51,25 @@ class UniversalImage extends StatelessWidget {
     }
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
+      borderRadius: isCircular
+          ? BorderRadius.circular((height ?? width ?? 50) / 2)
+          : BorderRadius.circular(borderRadius),
       child: imageWidget,
     );
   }
 
   Widget _buildSvgImage(String url) {
-    return SvgPicture.asset(
-      url,
-      height: height,
-      width: width,
-      fit: fit,
-      placeholderBuilder: (_) => _defaultLoadingPlaceholder(),
-    );
+    try {
+      return SvgPicture.asset(
+        url,
+        height: height,
+        width: width,
+        fit: fit,
+        placeholderBuilder: (_) => _defaultLoadingPlaceholder(),
+      );
+    } catch (e) {
+      return _buildNetworkImage(defaultPlaceholder);
+    }
   }
 
   Widget _buildNetworkImage(String url) {
@@ -92,12 +100,14 @@ class UniversalImage extends StatelessWidget {
 }
 
 
+
 ///1. Network Image
 // UniversalImage(
 // imagePath: 'https://example.com/image.jpg',
 // height: 60,
 // width: 60,
 // borderRadius: 12,
+//   isCircular: true,
 // )
 
 ///2. Asset Image
