@@ -235,7 +235,7 @@ class PersonalInformationScreen extends StatelessWidget {
               child: CustomButton(
                 text: 'Update',
                 onTap: () {
-                  profileController.updateProfileData();
+                  profileController.updateAccount();
                 }, //  => Get.toNamed(AppRoute.completeProfileScreen),
               ),
             ),

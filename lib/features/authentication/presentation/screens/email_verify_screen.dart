@@ -7,11 +7,12 @@ import 'package:get/get.dart';
 import '../../../../core/common/widgets/custom_text.dart';
 import '../../../../core/utils/constants/app_colors.dart';
 import '../../../../core/utils/constants/logo_path.dart';
+import '../../controllers/forget_pass_controller.dart';
 
 class EmailVerifyScreen extends StatelessWidget {
    EmailVerifyScreen({super.key});
 
-   final ResetPasswordController controller = Get.put(ResetPasswordController());
+   final ForgetPasswordController controller = Get.put(ForgetPasswordController());
 
   @override
   Widget build(BuildContext context) {

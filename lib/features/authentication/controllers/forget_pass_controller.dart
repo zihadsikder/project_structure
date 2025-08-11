@@ -9,7 +9,9 @@ import '../../../core/common/widgets/app_snackber.dart';
 import '../../../core/services/network_caller.dart';
 import '../../../core/utils/logging/logger.dart';
 
+import '../../../routes/app_routes.dart';
 import '../presentation/screens/verify_code_screen.dart';
+
 
 class ForgetPasswordController extends GetxController {
   final emailText = TextEditingController();
@@ -20,6 +22,7 @@ class ForgetPasswordController extends GetxController {
 
   /// Forgot password logic
   Future<void> forgetPass() async {
+
     String email = emailText.text.trim();
 
     if (!_isValidEmail(email)) {
@@ -52,9 +55,9 @@ class ForgetPasswordController extends GetxController {
           Get.back();
         }
 
-        if (response.responseData['message'] == 'User not found') {
+        if (response.isSuccess == false) {
           AppSnackBar.error(
-      'No account found with this email address.',
+            'No account found with this email address.',
           );
           log('response: ${response.responseData}');
           log('Response status: ${response.statusCode}');
@@ -63,12 +66,12 @@ class ForgetPasswordController extends GetxController {
           await Get.offAll(
                 () => VerifyCodeScreen(),
             arguments: {
-              //'from_screen': AppRoute.for,
+              'formScreen': AppRoute.emailVerifyScreen,
               "email": email,
             },
           );
           AppSnackBar.success(
-        'Check your email address for the OTP.',
+            response.errorMessage ?? 'Check your email address for the OTP.',
           );
         }
       } else {
@@ -76,7 +79,7 @@ class ForgetPasswordController extends GetxController {
           Get.back();
         }
         AppSnackBar.error(
-        response.errorMessage,
+          response.errorMessage,
         );
 
         /// Close the dialog after a delay to avoid indefinite loading
@@ -93,7 +96,7 @@ class ForgetPasswordController extends GetxController {
         Get.back();
       }
       AppSnackBar.error(
-      'Something went wrong. Please try again later.',
+        'Something went wrong. Please try again later.',
       );
     }
   }

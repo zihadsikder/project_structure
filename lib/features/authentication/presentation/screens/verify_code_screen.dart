@@ -71,9 +71,56 @@ class VerifyCodeScreen extends StatelessWidget {
                 separatorBuilder: (index) => SizedBox(width: 8),
               ),
             ),
+            SizedBox(height: 36.h),
+
+            Obx(
+                  () {
+                return Align(
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomText(
+                        text: controller.isClickable.value
+                            ? 'Resent code in: '
+                            : 'Resent code in: ${controller.formatTime(controller.secondsRemaining.value)}',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textPrimary,
+                      ),
+                      GestureDetector(
+                        onTap: controller.isClickable.value
+                            ? () {
+                          controller.resendOtp();
+                          //controller.resetTimer();
+
+                        }
+                            : null,
+                        child: Text(
+                          'Resend!',
+                          style: TextStyle(
+                            //decoration: TextDecoration.underline,
+                            decorationThickness: 1,
+                            decorationColor: controller.isClickable.value
+                                ? const Color(0xffFF6F00)
+                                : const Color(0xff9CA3AF),
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w400,
+                            color: controller.isClickable.value
+                                ? const Color(0xffFF6F00)
+                                : Colors.transparent,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
             Spacer(),
             CustomButton(
                 text: 'Verify',
+                //onTap: controller.verifyOtp
                 onTap: (){
                   Get.offAllNamed(AppRoute.navBar);
                 })

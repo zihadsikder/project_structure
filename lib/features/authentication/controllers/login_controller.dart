@@ -21,12 +21,11 @@ class LoginController extends GetxController {
   }
 
   /// Sign in function
-  Future<void> signIn({required String fcmToken}) async {
+  Future<void> signIn() async {
     if (phoneText.text.trim().isEmpty || passwordText.text.trim().isEmpty) {
       AppSnackBar.error('Please fill all fields.');
       return;
     }
-
     try {
       Get.dialog(
         const AppLoader(),
@@ -36,7 +35,7 @@ class LoginController extends GetxController {
       final requestBody = {
         "email": phoneText.text.trim(),
         "password": passwordText.text.trim(),
-        "fcmToken": fcmToken,
+
       };
 
       log('Login Request Body: $requestBody');
@@ -49,7 +48,8 @@ class LoginController extends GetxController {
       log('Login API Response: ${response.responseData}');
 
       if (response.isSuccess) {
-        final token = response.responseData['result']['accessToken'] ?? '';
+        final token = response.responseData['data']?['accessToken'] ?? '';
+
 
         if (token.isNotEmpty) {
           await AuthService.saveToken(token);
@@ -60,11 +60,11 @@ class LoginController extends GetxController {
       } else if (response.statusCode == 401) {
         AppSnackBar.error('Invalid credentials. Please try again.');
       } else if (response.statusCode == 308) {
-        final email = response.responseData['result']['email'];
+        final email = response.responseData['data']['email'];
         Get.offAllNamed(
           AppRoute.verifyCodeScreen,
           arguments: {
-            'formScreen': AppRoute.signUpScreen,
+            'formScreen': AppRoute.loginScreen,
             'email': email,
           },
         );

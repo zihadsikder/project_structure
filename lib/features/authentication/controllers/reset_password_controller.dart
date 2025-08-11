@@ -12,12 +12,11 @@ import '../../../routes/app_routes.dart';
 
 class ResetPasswordController extends GetxController {
 
-  final emailText = TextEditingController();
-  final otpText = TextEditingController();
-  final newPasswordText = TextEditingController();
-  final confirmPassText = TextEditingController();
+  final TextEditingController passwordTEController = TextEditingController();
+  final TextEditingController confirmPasswordTEController = TextEditingController();
   final isLoading = false.obs;
-
+  final RxBool isPasswordVisible = true.obs;
+  final RxBool isComPasswordVisible = true.obs;
   String? token;
 
   @override
@@ -27,19 +26,27 @@ class ResetPasswordController extends GetxController {
       token = Get.arguments["token"];
     }
   }
+  void togglePasswordVisibility() {
+    isPasswordVisible.value = !isPasswordVisible.value;
+  }
 
+  void toggleComPasswordVisibility() {
+    isComPasswordVisible.value = !isComPasswordVisible.value;
+  }
   /// reset Passwor
   Future<void> resetPassword() async {
-    final context = Get.context;
-    if (newPasswordText.text != confirmPassText.text) {
+
+
+    if (passwordTEController.text != confirmPasswordTEController.text) {
       AppSnackBar.error(
-    'Passwords do not match.',
+        'Passwords do not match.',
       );
       return;
     }
 
     final Map<String, dynamic> requestBody = {
-      'newPassword': newPasswordText.text.trim(),
+      "token": token,
+      'password': passwordTEController.text.trim(),
     };
     try {
       Get.dialog(
@@ -60,23 +67,23 @@ class ResetPasswordController extends GetxController {
 
       Get.back(); // Close loader
       if (response.isSuccess) {
-        ///  Success — show dialog
-        if (context != null) {
-          // showDialog(
-          //   context: context,
-          //   builder: (context) {
-          //     return AuthDialog(message: 'Your account was successfully updated.');
-          //   },
-          // );
 
-          // Wait for the dialog to be visible, then navigate
-          Future.delayed(Duration(seconds: 2), () {
-            if (Get.isDialogOpen ?? false) {
-              Get.back(); // close dialog
-            }
-            Get.offAllNamed(AppRoute.signUpScreen);
-          });
-        }
+
+        // showDialog(
+        //   context: context,
+        //   builder: (context) {
+        //     return AuthDialog(message: 'Your account was successfully updated.');
+        //   },
+        // );
+
+        // Wait for the dialog to be visible, then navigate
+        Future.delayed(Duration(seconds: 2), () {
+          if (Get.isDialogOpen ?? false) {
+            Get.back(); // close dialog
+          }
+          Get.offAllNamed(AppRoute.loginScreen);
+        });
+
 
         log("request $requestBody");
       } else {
