@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:gat/core/utils/constants/app_sizer.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_text.dart';
+import '../../../../core/common/widgets/universal_Image.dart';
 import '../../../../core/services/Auth_service.dart';
 import '../../../../core/utils/constants/app_colors.dart';
 import '../../../../core/utils/constants/app_texts.dart';
@@ -34,6 +36,54 @@ class ProfileScreen extends StatelessWidget {
                 Gap(80.h),
 
                 ///  Profile Picture Section
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Obx(() {
+                      if (profileController.profileImage.value != null) {
+                        // Show local picked image instantly
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(80),
+                          child: Image.file(
+                            profileController.profileImage.value!,
+                            height: 160,
+                            width: 160,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      } else {
+                        // Show network image
+                        return UniversalImage(
+                          isCircular: true,
+                          height: 160,
+                          width: 160,
+                          imagePath: profileController.profileDataModel.value.data?.image
+                        );
+                      }
+                    }),
+
+                    Positioned(
+                      bottom: 15,
+                      right: 10,
+                      child: InkWell(
+                        onTap: () {
+                          profileController.pickImage(ImageSource.gallery);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.white,
+                          ),
+                          child: Icon(
+                            Icons.image,
+                            color: AppColors.textFormFieldBorder,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 Obx(() {
                   if(profileController.isLoading.value) {
                     return Center(child: CircularProgressIndicator(color: AppColors.primary),);
