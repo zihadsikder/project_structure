@@ -1,3 +1,4 @@
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:gat/core/utils/constants/app_sizer.dart';
@@ -144,6 +145,34 @@ class SignUpScreen extends StatelessWidget {
                           },
                         );
                       }),
+                      SizedBox(height: 32.h),
+                      CustomTextField(
+                        prefixIconPath: CountryCodePicker(
+                          onChanged: (CountryCode code) {
+                            controller.updateSelectedCountry(code);
+                          },
+                          initialSelection: 'BD',
+                          favorite: ['+880', 'US'],
+                          showCountryOnly: false,
+                          showOnlyCountryWhenClosed: true,
+                          alignLeft: true,
+                          showFlag: true,
+                          showFlagDialog: true,
+                          showFlagMain: true,
+                          flagWidth: 25,
+                          padding: EdgeInsets.zero,
+                          textStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textSecondary,
+                          ),
+                          dialogSize: const Size(350, 500),
+                          enabled: true,
+                        ),
+
+                        hintText: '',
+                        suffixIcon: Icon(Icons.keyboard_arrow_down_outlined),
+                      ),
                       SizedBox(height: 32.h),
                       CustomButton(
                           text: 'Create Account',

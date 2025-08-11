@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gat/core/common/widgets/app_loader.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,9 @@ class SignUpController extends GetxController {
   final RxBool isPasswordVisible = false.obs;
   final RxBool isComPasswordVisible = false.obs;
   final RxBool isLoading = false.obs;
-
+  final RxString selectedCountry = 'Bangladesh'.obs;
+  final RxString selectedDialCode = '880'.obs;
+  final RxString selectedCode = 'bn'.obs;
   String fcmToken = '';
 
   void togglePasswordVisibility() {
@@ -32,6 +35,13 @@ class SignUpController extends GetxController {
 
   void toggleComPasswordVisibility() {
     isComPasswordVisible.value = !isComPasswordVisible.value;
+  }
+
+  void updateSelectedCountry(CountryCode code) {
+    selectedCountry.value = code.name ?? '';
+    selectedDialCode.value = code.dialCode ?? '';
+    selectedCode.value = code.code ?? '';
+    print('Country: ${code.name}, Dial: ${code.dialCode}, ISO: ${code.code}');
   }
 
   /// Initialize Firebase Cloud Messaging and get FCM token

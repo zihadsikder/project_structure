@@ -38,6 +38,7 @@ dependencies:
   flutter_local_notifications:
   firebase_auth:
   google_sign_in: ^6.3.0
+  country_code_picker: ^3.3.0
 
 
 dev_dependencies:
