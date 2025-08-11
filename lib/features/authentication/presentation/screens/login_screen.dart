@@ -12,11 +12,13 @@ import 'package:gat/routes/app_routes.dart';
 import '../../../../core/common/widgets/custom_text.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/social_auth_login.dart';
+
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
   final LoginController controller = Get.put(LoginController());
-
+  final SocialAuthController socialAuthController = Get.put(SocialAuthController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,23 +131,29 @@ class LoginScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 32.h),
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                            color: AppColors.containerBorder, width: 1),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                              LogoPath.googleLogo, height: 24.h, width: 24.w),
-                          SizedBox(width: 12.w),
-                          CustomText(text: 'Sign In with Google',
-                              color: AppColors.textBold,
-                              fontWeight: FontWeight.w600)
-                        ],
+                    InkWell(
+                      onTap: (){
+                        socialAuthController.getGoogleUserData();
+
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(
+                              color: AppColors.containerBorder, width: 1),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                                LogoPath.googleLogo, height: 24.h, width: 24.w),
+                            SizedBox(width: 12.w),
+                            CustomText(text: 'Sign In with Google',
+                                color: AppColors.textBold,
+                                fontWeight: FontWeight.w600)
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: 18.h),

@@ -7,6 +7,7 @@ class AppUrls {
   /// post Api
   static const String register = '$_baseUrl/users/create';
   static const String login = '$_baseUrl/auth/login';
+  static const String socialAuth = '$_baseUrl/auth/login';
   static const String verifySignUpOtp = '$_baseUrl/users/signup-verification';
   static const String resendOtp = '$_baseUrl/auth/resend-otp';
   static const String forgetPassword = '$_baseUrl/auth/send-otp';

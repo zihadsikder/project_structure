@@ -2,53 +2,105 @@ import 'package:flutter/material.dart';
 import 'package:gat/core/common/widgets/custom_text_field.dart';
 import 'package:gat/core/utils/constants/app_sizer.dart';
 import 'package:gat/features/authentication/controllers/reset_password_controller.dart';
-import 'package:gat/routes/app_routes.dart';
+
 import 'package:get/get.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_text.dart';
 import '../../../../core/utils/constants/app_colors.dart';
-import '../../../../core/utils/constants/logo_path.dart';
+import '../../../../core/utils/constants/icon_path.dart';
+
+import '../../../../core/utils/validators/app_validator.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
-   ResetPasswordScreen({super.key});
+  ResetPasswordScreen({super.key});
 
-   final ResetPasswordController controller = Get.put(ResetPasswordController());
-
+  final ResetPasswordController controller = Get.put(ResetPasswordController());
+  //final SignUpController signController = Get.put(SignUpController());
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 26),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Image.asset(LogoPath.splashLogo, width: 99.w, height: 75.h),
-            SizedBox(height: 32.h),
-            CustomText(text: 'Reset Password',
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textBold),
-            SizedBox(height: 4.h),
-            CustomText(text: 'Use a new password with at least 6 characters.',
-                color: AppColors.textGrey),
-            SizedBox(height: 24.h),
-            CustomTextField(
-                hintText: 'Enter your new password',
-               controller: controller.newPasswordText,
-            ),
-            SizedBox(height: 8.h),
-            CustomTextField(
-                hintText: 'Enter your confirm password',
-               controller: controller.confirmPassText,
-            ),
-            Spacer(),
-            CustomButton(
-                text: 'Change Password',
-                onTap: (){
-                  Get.offAllNamed(AppRoute.loginScreen);
-                })
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+
+            children: [
+              //Image.asset(LogoPath.logo, width: 160.w, height: 188.h),
+              SizedBox(height: 32.h),
+
+              CustomText(text: 'Reset Your Password',
+                  fontSize: 22.sp,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary),
+              SizedBox(height: 4.h),
+              CustomText(
+                  textAlign: TextAlign.center,
+                  text: 'Welcome back! Please enter a new\npassword.',
+                  color: AppColors.textSecondary),
+              SizedBox(height: 24.h),
+              Obx(() {
+                return CustomTextField(
+                  prefixIconPath: Image.asset(IconPath.email,),
+                  hintText: 'Password',
+                  controller: controller.passwordTEController,
+                  obscureText: controller.isPasswordVisible.value,
+                  suffixIcon: GestureDetector(
+                    onTap:
+                        () =>
+                    controller.isPasswordVisible.value,
+                    child:
+                    controller.isPasswordVisible.value
+                        ? Icon(
+                      Icons.visibility_off_outlined,
+                      color: Colors.grey,
+                    )
+                        : Icon(
+                      Icons.visibility_outlined,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  validator: AppValidator.validatePassword,
+                );
+              }),
+              SizedBox(height: 8.h),
+
+              Obx(() {
+                return CustomTextField(
+                  prefixIconPath: Image.asset(IconPath.email,),
+                  hintText: 'Re-type Password',
+                  controller: controller.confirmPasswordTEController,
+                  obscureText: controller.isComPasswordVisible.value,
+                  suffixIcon: GestureDetector(
+                    onTap:
+                        () =>
+                    controller.isComPasswordVisible.value =
+                    !controller.isComPasswordVisible.value,
+                    child:
+                    controller.isComPasswordVisible.value
+                        ? Icon(
+                      Icons.visibility_off_outlined,
+                      color: Colors.grey,
+                    )
+                        : Icon(
+                      Icons.visibility_outlined,
+                      color: Colors.grey,
+                    ),
+                  ),
+                );
+              }),
+              Spacer(),
+              CustomButton(
+                  text: 'Change Password',
+                  onTap: (){
+                    if(_formKey.currentState!.validate()){
+                      controller.resetPassword();
+                    }
+                  })
+            ],
+          ),
         ),
       )),
     );

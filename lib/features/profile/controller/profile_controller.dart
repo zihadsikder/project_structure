@@ -10,6 +10,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../core/common/widgets/app_loader.dart';
+import '../../../core/common/widgets/app_snackber.dart';
 import '../../../core/common/widgets/app_toast.dart';
 
 import '../../../core/common/widgets/loading_widgets.dart';
@@ -25,7 +27,7 @@ class ProfileController extends GetxController {
   final TextEditingController addressController = TextEditingController();
 
   final inProgress = false.obs;
-
+  RxString imagePath = ''.obs;
   // Observable for selected image
   final Rx<File?> profileImage = Rx<File?>(null);
 
@@ -49,19 +51,22 @@ class ProfileController extends GetxController {
     _loadNotificationState();
   }
 
-  // Method to pick an image from gallery or camera
+  /// Method to pick an image from gallery or camera
   Future<void> pickImage(ImageSource source) async {
     try {
       final XFile? pickedFile = await _picker.pickImage(source: source);
       if (pickedFile != null) {
         profileImage.value = File(pickedFile.path);
+        imagePath.value = pickedFile.path; // Store path for update
+        await updateAccount(); // Instantly update profile
       }
     } catch (e) {
       Get.snackbar('Error', 'Failed to pick image: $e');
     }
   }
 
-  // Method to toggle notification state
+
+  /// Method to toggle notification state
   void toggleNotification() async {
     isNotificationEnabled.value = !isNotificationEnabled.value;
     // Save the new state to shared preferences
@@ -110,7 +115,7 @@ class ProfileController extends GetxController {
 
   /// Updated Profile Data Method
 
-  Future<void> updateProfileData() async {
+  Future<void> updateAccount() async {
     try {
       LoadingWidget();
       var request = http.MultipartRequest(
@@ -188,82 +193,99 @@ class ProfileController extends GetxController {
     }
   }
 
-  /// update profile another method
-  //   Future<void> updateAccount() async {
-  //     inProgress.value = true;
+  /// update profile another formdata method
+  // Future<void> updateAccount() async {
+  //   inProgress.value = true;
   //
-  //     Map<String, dynamic> requestBody = {
-  //       "name": nameController.text.trim(),
-  //       "email": emailController.text.trim(),
-  //       "phoneNumber": phoneNumberController.text.trim(),
-  //       "location": addressController.text.trim(),
-  //     };
+  //   Map<String, dynamic> requestBody = {
+  //     "name": nameController.text.trim(),
+  //     //"email": emailController.text.trim(),
+  //     "phoneNumber": phoneNumberController.text.trim(),
+  //     // "country":selectedCountry.value,
+  //     // "countryCode": selectedCode.value,
+  //   };
   //
-  //     try {
-  //       Get.dialog(
-  //         Center(
-  //           child: AppLoader(),
-  //         ),
-  //         barrierDismissible: false,
+  //   try {
+  //     Get.dialog(
+  //       Center(
+  //         child:AppLoader(),
+  //       ),
+  //       barrierDismissible: false,
+  //     );
+  //
+  //     await _sendRequestWithHeadersAndImages(
+  //       AppUrls.updateProfile,
+  //       requestBody,
+  //       imagePath.value.isNotEmpty ? imagePath.value : null,
+  //       AuthService.token != null ? "Bearer ${AuthService.token}" : "",
+  //     );
+  //
+  //     await getProfileData();
+  //
+  //   } catch (e) {
+  //     log('Update profile error: $e');
+  //     AppSnackBar.error(
+  //       'Profile update failed. Please try again.',
+  //     );
+  //   } finally {
+  //     inProgress.value = false;
+  //     if (Get.isDialogOpen ?? false) Get.back();
+  //   }
+  // }
+  //
+  // Future<void> _sendRequestWithHeadersAndImages(
+  //     String url,
+  //     Map<String, dynamic> body,
+  //     String? imagePath,
+  //     String? token,
+  //     ) async {
+  //   try {
+  //     var request = http.MultipartRequest('PUT', Uri.parse(url));
+  //     request.headers['Authorization'] = '$token';
+  //     request.fields['bodyData'] = jsonEncode(body);
+  //
+  //     if (imagePath != null && imagePath.isNotEmpty) {
+  //       request.files.add(await http.MultipartFile.fromPath('profileImage', imagePath));
+  //     }
+  //
+  //     log('Sending request to $url with data: $body');
+  //
+  //     var response = await request.send();
+  //
+  //     // Always close any loading dialog immediately after response
+  //     if (Get.isDialogOpen ?? false) {
+  //       Get.back();
+  //     }
+  //
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
+  //       AppSnackBar.success(
+  //
+  //         'Profile updated successfully.',
+  //
   //       );
+  //       await getProfileData(); // refresh profile data after success
   //
-  //       await _sendRequestWithHeadersAndImages(
-  //         AppUrls.updateProfile,
-  //         requestBody,
-  //         imagePath.value.isNotEmpty ? imagePath.value : null,
-  //         "Bearer ${AuthService.token}",
-  //       );
+  //       // Clear local picked image so UI shows updated network image
+  //       profileImage.value = null;
+  //       this.imagePath.value = '';
   //
-  //       await getProfileData();
-  //
-  //     } catch (e) {
-  //       log('Update profile error: $e');
+  //     } else {
+  //       var errorResponse = await response.stream.bytesToString();
+  //       log('Update failed: $errorResponse');
   //       AppSnackBar.error(
-  //    'Profile update failed. Please try again.',
+  //
+  //         'Failed to update profile.',
   //       );
-  //     } finally {
-  //       inProgress.value = false;
-  //       if (Get.isDialogOpen ?? false) Get.back();
+  //
   //     }
-  //   }
-  //
-  //   Future<void> _sendRequestWithHeadersAndImages(
-  //       String url,
-  //       Map<String, dynamic> body,
-  //       String? imagePath,
-  //       String? token,
-  //       ) async {
-  //     try {
-  //       var request = http.MultipartRequest('PUT', Uri.parse(url));
-  //       request.headers['Authorization'] = 'Bearer $token';
-  //       request.fields['bodyData'] = jsonEncode(body);
-  //
-  //       if (imagePath != null && imagePath.isNotEmpty) {
-  //         request.files.add(await http.MultipartFile.fromPath('profileImage', imagePath));
-  //       }
-  //
-  //       log('Sending request to $url with data: $body');
-  //
-  //       var response = await request.send();
-  //       if (response.statusCode == 200 || response.statusCode == 201) {
-  //         AppSnackBar.success(
-  //
-  //           'Profile updated successfully.',
-  //
-  //         );
-  //
-  //       } else {
-  //         var errorResponse = await response.stream.bytesToString();
-  //         log('Update failed: $errorResponse');
-  //         AppSnackBar.error(
-  //
-  //        'Failed to update profile.',
-  //         );
-  //       }
-  //     } catch (e) {
-  //       log('Multipart request error: $e');
+  //   } catch (e) {
+  //     if (Get.isDialogOpen ?? false) {
+  //       Get.back();
   //     }
+  //     log('Multipart request error: $e');
+  //     AppSnackBar.error('Error updating profile. Please try again.');
   //   }
+  // }
   /// delete account
   Future<void> deleteAccount() async {
     try {

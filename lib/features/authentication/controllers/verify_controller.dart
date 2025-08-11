@@ -11,41 +11,56 @@ import '../../../core/common/widgets/app_snackber.dart';
 import '../../../core/services/network_caller.dart';
 import '../../../core/utils/logging/logger.dart';
 import '../../../routes/app_routes.dart';
+import '../presentation/widgets/sign_up_confirmation_dialog.dart';
 
 class OtpController extends GetxController {
+  // Text Field Controller
   final TextEditingController otpTEController = TextEditingController();
-  final RxInt secondRemaining = 300.obs;
+
+  // Timer state
+  final RxInt secondsRemaining = 300.obs;
   final RxBool isClickable = false.obs;
-  final RxBool isLoading = true.obs;
+
+  // Loading state
+  final RxBool isLoading = false.obs;
+
+  // Navigation data
   String? fromScreen;
   String? email;
+
   Timer? _timer;
 
   @override
   void onInit() {
     super.onInit();
-    if (Get.arguments != null) {
-      email = Get.arguments["email"];
-      fromScreen = Get.arguments['formScreen'];
-    }
+    email = Get.arguments?["email"];
+    fromScreen = Get.arguments?['formScreen'];
     _startCountdown();
   }
 
+  @override
+  void onClose() {
+    _timer?.cancel();
+    otpTEController.dispose();
+    super.onClose();
+  }
+
+  // Countdown logic
   void _startCountdown() {
-    if (_timer != null && _timer!.isActive) return;
+    if (_timer?.isActive ?? false) return;
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (secondRemaining.value > 0) {
-        secondRemaining.value--;
+      if (secondsRemaining.value > 0) {
+        secondsRemaining.value--;
       } else {
         isClickable.value = true;
-        _timer?.cancel();
+        timer.cancel();
       }
     });
   }
 
   void resetTimer() {
-    secondRemaining.value = 300;
+    secondsRemaining.value = 300;
     isClickable.value = false;
     _timer?.cancel();
     _startCountdown();
@@ -57,22 +72,18 @@ class OtpController extends GetxController {
     return '$minutes:${secs.toString().padLeft(2, '0')}';
   }
 
-  @override
-  void onClose() {
-    _timer?.cancel();
-    super.onClose();
-  }
-
-  /// OTP Verification
+  /// OTP verification
   Future<void> verifyOtp() async {
-    if (otpTEController.text.isEmpty || otpTEController.text.length != 4) {
-      AppSnackBar.error('Please enter a valid 4-digit OTP');
+    final otpText = otpTEController.text.trim();
+
+    if (otpText.length != 6 || int.tryParse(otpText) == null) {
+      AppSnackBar.error('Please enter a valid 6-digit OTP');
       return;
     }
 
     final Map<String, dynamic> requestBody = {
       "email": email,
-      'otp': otpTEController.text.trim(),
+      "otp": int.parse(otpText),
     };
 
     try {
@@ -92,7 +103,7 @@ class OtpController extends GetxController {
         if (response.isSuccess) {
           Future.delayed(const Duration(seconds: 2), () {
             if (Get.isDialogOpen ?? false) Get.back();
-            Get.offAllNamed(AppRoute.signUpScreen);
+            showSignupConfirmationDialog();
           });
         } else {
           _handleOtpError(response);
@@ -104,7 +115,7 @@ class OtpController extends GetxController {
         );
 
         if (response.isSuccess) {
-          final String? accessToken = response.responseData?['result']?['forgetToken'];
+          final String? accessToken = response.responseData?['data'];
           if (accessToken != null) {
             await Get.toNamed(
               AppRoute.resetPasswordScreen,
@@ -127,69 +138,60 @@ class OtpController extends GetxController {
 
   /// Resend OTP
   Future<void> resendOtp() async {
-    resetTimer();
-
-    final Map<String, dynamic> requestBody = {"id": email};
-
     if (email == null) {
       AppLoggerHelper.error('Email is null in resendOtp');
       AppSnackBar.error('Failed to resend OTP. Please try again.');
       return;
     }
 
+    resetTimer();
+
     try {
-      Get.dialog(
-        const Center(child: AppLoader()),
-        barrierDismissible: false,
-      );
+      Get.dialog(const Center(child: AppLoader()), barrierDismissible: false);
 
       final response = await NetworkCaller().postRequest(
         AppUrls.resendOtp,
-        body: requestBody,
+        body: {"email": email},
       );
 
       if (Get.isDialogOpen == true) Get.back();
 
       if (response.isSuccess) {
-        AppSnackBar.error(
-      'OTP resent successfully. Please check your email.',
-        );
+        AppSnackBar.success('OTP resent successfully. Please check your email.');
       } else {
-        String errorMessage = response.errorMessage ??
-            (response.responseData['message'] as String? ??
-                'Failed to resend OTP. Please try again.');
+        final message = response.errorMessage ??
+            response.responseData['message'] ??
+            'Failed to resend OTP. Please try again.';
 
         if (response.statusCode == 429) {
-          errorMessage = 'Too many requests. Please try again later.';
+          _handleError('Too many requests. Try again later.');
+        } else {
+          _handleError(message);
         }
-
-        AppLoggerHelper.error('Resend OTP Error: $errorMessage');
-        AppSnackBar.error(errorMessage);
       }
     } catch (e) {
       AppLoggerHelper.error('Exception in resendOtp: $e');
       if (Get.isDialogOpen == true) Get.back();
-      AppSnackBar.error(
-     'Something went wrong while resending OTP. Please try again.',
-      );
-    } finally {
-      if (Get.isDialogOpen == true) Get.back();
+      AppSnackBar.error('Something went wrong while resending OTP.');
     }
   }
 
-  /// Error Handling
-  void _handleError(String errorMessage) {
+  // Handle errors
+  void _handleError(String message) {
     if (Get.isDialogOpen ?? false) Get.back();
-    AppSnackBar.error(errorMessage);
+    AppSnackBar.error(message);
   }
 
   void _handleOtpError(dynamic response) {
-    if (response.statusCode == 408) {
-      _handleError('OTP Expired');
-    } else if (response.statusCode == 404) {
-      _handleError('OTP doesn\'t match');
-    } else {
-      _handleError('OTP verification failed.');
+    switch (response.statusCode) {
+      case 408:
+        _handleError('OTP expired. Please resend.');
+        break;
+      case 404:
+        _handleError('OTP does not match.');
+        break;
+      default:
+        _handleError(response.errorMessage ?? 'OTP verification failed.');
     }
   }
 }
