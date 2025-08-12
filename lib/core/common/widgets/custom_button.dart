@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../utils/constants/app_colors.dart';
+
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
@@ -63,7 +65,9 @@ class CustomButton extends StatelessWidget {
           padding: padding ?? const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           decoration: BoxDecoration(
             gradient: hasGradient ? backgroundColor : null,
-            color: !hasGradient ? backgroundColor : null,
+            color: !hasGradient
+                ? (backgroundColor ?? AppColors.primary)
+                : null,
             borderRadius: effectiveBorderRadius,
             border: isOutline
                 ? Border.all(color: borderColor ?? Theme.of(context).primaryColor)
@@ -78,6 +82,7 @@ class CustomButton extends StatelessWidget {
             ]
                 : [],
           ),
+
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,

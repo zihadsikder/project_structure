@@ -1,7 +1,9 @@
-import 'package:gat/features/home/controllers/gat_labs_controller.dart';
+
 import 'package:gat/features/home/controllers/home_controller.dart';
 import 'package:gat/features/nav_bar/controllers/nav_bar_controller.dart';
 import 'package:get/get.dart';
+
+import '../../features/profile/controller/profile_controller.dart';
 
 class ControllerBinder extends Bindings {
   @override
@@ -15,8 +17,8 @@ class ControllerBinder extends Bindings {
           () => HomeController(),
       fenix: true,
     );
-    Get.lazyPut<GatLabsController>(
-          () => GatLabsController(),
+    Get.lazyPut<ProfileController>(
+          () => ProfileController(),
       fenix: true,
     );
 

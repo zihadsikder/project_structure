@@ -93,9 +93,10 @@ class LoginScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 32.h),
                     CustomButton(
+
                         text: 'Login',
                         onTap: () {
-                          Get.toNamed(AppRoute.navBar);
+                          controller.signIn();
                         }),
                     SizedBox(height: 32.h),
                     Row(

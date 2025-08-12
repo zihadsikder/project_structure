@@ -69,7 +69,7 @@ class SignUpScreen extends StatelessWidget {
                           color: AppColors.textBold),
                       SizedBox(height: 12.h),
                       CustomTextField(
-                        prefixIconPath: Image.asset(IconPath.email),
+                        prefixIconPath: Image.asset(IconPath.images),
                         hintText: 'Enter your email address',
                         controller: controller.emailTEController,
                         validator: AppValidator.validateEmail,

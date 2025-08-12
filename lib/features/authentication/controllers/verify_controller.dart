@@ -74,66 +74,75 @@ class OtpController extends GetxController {
 
   /// OTP verification
   Future<void> verifyOtp() async {
-    final otpText = otpTEController.text.trim();
 
-    if (otpText.length != 6 || int.tryParse(otpText) == null) {
-      AppSnackBar.error('Please enter a valid 6-digit OTP');
-      return;
-    }
+    if (fromScreen == AppRoute.signUpScreen || fromScreen == AppRoute.loginScreen) {
+      showSignupConfirmationDialog();
+    } else {
+      Get.offNamed(
+        AppRoute.resetPasswordScreen,
 
-    final Map<String, dynamic> requestBody = {
-      "email": email,
-      "otp": int.parse(otpText),
-    };
-
-    try {
-      Get.dialog(
-        const Center(child: AppLoader()),
-        barrierDismissible: false,
       );
-
-      late final dynamic response;
-
-      if (fromScreen == AppRoute.signUpScreen || fromScreen == AppRoute.loginScreen) {
-        response = await NetworkCaller().postRequest(
-          AppUrls.verifySignUpOtp,
-          body: requestBody,
-        );
-
-        if (response.isSuccess) {
-          Future.delayed(const Duration(seconds: 2), () {
-            if (Get.isDialogOpen ?? false) Get.back();
-            showSignupConfirmationDialog();
-          });
-        } else {
-          _handleOtpError(response);
-        }
-      } else {
-        response = await NetworkCaller().postRequest(
-          AppUrls.verifyForgetPasswordOtp,
-          body: requestBody,
-        );
-
-        if (response.isSuccess) {
-          final String? accessToken = response.responseData?['data'];
-          if (accessToken != null) {
-            await Get.toNamed(
-              AppRoute.resetPasswordScreen,
-              arguments: {"token": accessToken},
-            );
-          } else {
-            _handleError('Invalid OTP entered.');
-          }
-        } else {
-          _handleOtpError(response);
-        }
-      }
-    } catch (e) {
-      log("OTP Verification Error: $e");
-      _handleError('An unexpected error occurred. Please try again.');
-    } finally {
-      if (Get.isDialogOpen == true) Get.back();
     }
+    //final otpText = otpTEController.text.trim();
+    //
+    // if (otpText.length != 6 || int.tryParse(otpText) == null) {
+    //   AppSnackBar.error('Please enter a valid 6-digit OTP');
+    //   return;
+    // }
+    //
+    // final Map<String, dynamic> requestBody = {
+    //   "email": email,
+    //   "otp": int.parse(otpText),
+    // };
+    //
+    // try {
+    //   Get.dialog(
+    //     const Center(child: AppLoader()),
+    //     barrierDismissible: false,
+    //   );
+    //
+    //   late final dynamic response;
+    //
+    //   if (fromScreen == AppRoute.signUpScreen || fromScreen == AppRoute.loginScreen) {
+    //     response = await NetworkCaller().postRequest(
+    //       AppUrls.verifySignUpOtp,
+    //       body: requestBody,
+    //     );
+    //
+    //     if (response.isSuccess) {
+    //       Future.delayed(const Duration(seconds: 2), () {
+    //         if (Get.isDialogOpen ?? false) Get.back();
+    //         showSignupConfirmationDialog();
+    //       });
+    //     } else {
+    //       _handleOtpError(response);
+    //     }
+    //   } else {
+    //     response = await NetworkCaller().postRequest(
+    //       AppUrls.verifyForgetPasswordOtp,
+    //       body: requestBody,
+    //     );
+    //
+    //     if (response.isSuccess) {
+    //       final String? accessToken = response.responseData?['data'];
+    //       if (accessToken != null) {
+    //         await Get.toNamed(
+    //           AppRoute.resetPasswordScreen,
+    //           arguments: {"token": accessToken},
+    //         );
+    //       } else {
+    //         _handleError('Invalid OTP entered.');
+    //       }
+    //     } else {
+    //       _handleOtpError(response);
+    //     }
+    //   }
+    // } catch (e) {
+    //   log("OTP Verification Error: $e");
+    //   _handleError('An unexpected error occurred. Please try again.');
+    // } finally {
+    //   if (Get.isDialogOpen == true) Get.back();
+    // }
   }
 
   /// Resend OTP
