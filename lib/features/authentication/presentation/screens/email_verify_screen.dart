@@ -41,9 +41,7 @@ class EmailVerifyScreen extends StatelessWidget {
                 Spacer(),
                 CustomButton(
                     text: 'Continue',
-                    onTap: (){
-                      //Get.toNamed(AppRoute.resetOtpVerifyScreen);
-                    })
+                    onTap: controller.forgetPass)
               ],
             ),
           )),

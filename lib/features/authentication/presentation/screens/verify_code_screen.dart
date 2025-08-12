@@ -120,10 +120,8 @@ class VerifyCodeScreen extends StatelessWidget {
             Spacer(),
             CustomButton(
                 text: 'Verify',
-                //onTap: controller.verifyOtp
-                onTap: (){
-                  Get.offAllNamed(AppRoute.navBar);
-                })
+                onTap: controller.verifyOtp
+            )
           ],
         ),
       )),

@@ -10,6 +10,8 @@ import '../features/authentication/presentation/screens/login_screen.dart';
 import '../features/authentication/presentation/screens/sing_up_screen.dart';
 
 import '../features/nav_bar/presentation/screens/nav_bar.dart';
+import '../features/profile/presentation/screens/change_password_screen.dart';
+import '../features/profile/presentation/screens/personal_information_screen.dart';
 import '../features/splash_screen/presentation/screens/splash_screen.dart';
 
 class AppRoute {
@@ -23,7 +25,8 @@ class AppRoute {
 
 
   static String emailVerifyScreen = "/emailVerifyScreen";
-
+  static String changePasswordScreen = "/resetPasswordScreen";
+  static String personalInformationScreen = "/verifyCodeScreen";
   static String resetPasswordScreen = "/resetPasswordScreen";
   static String verifyCodeScreen = "/verifyCodeScreen";
 
@@ -48,7 +51,8 @@ class AppRoute {
     GetPage(name: loginScreen, page: () =>  LoginScreen()),
     GetPage(name: signUpScreen, page:() =>  SignUpScreen()),
     GetPage(name: emailVerifyScreen, page:() =>  EmailVerifyScreen()),
-
+    GetPage(name: changePasswordScreen, page:() =>  ChangePasswordScreen()),
+    GetPage(name: personalInformationScreen, page:() =>  PersonalInformationScreen()),
     GetPage(name: resetPasswordScreen, page:() =>  ResetPasswordScreen()),
     GetPage(name: verifyCodeScreen, page:() =>  VerifyCodeScreen()),
     GetPage(name: navBar, page:() =>  NavBar()),

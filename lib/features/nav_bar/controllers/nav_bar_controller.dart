@@ -1,4 +1,5 @@
 import 'package:gat/features/home/presentaion/screens/home_screen.dart';
+import 'package:gat/features/profile/presentation/screens/profile_screen.dart';
 
 
 import 'package:get/get.dart';
@@ -13,7 +14,7 @@ class NavBarController extends GetxController {
     HomeScreen(),
     HomeScreen(),
     HomeScreen(),
-    HomeScreen(),
+    ProfileScreen(),
   ];
 
   @override

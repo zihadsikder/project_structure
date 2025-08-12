@@ -43,7 +43,7 @@ class ResetPasswordScreen extends StatelessWidget {
               SizedBox(height: 24.h),
               Obx(() {
                 return CustomTextField(
-                  prefixIconPath: Image.asset(IconPath.email,),
+                  prefixIconPath: Image.asset(IconPath.images,),
                   hintText: 'Password',
                   controller: controller.passwordTEController,
                   obscureText: controller.isPasswordVisible.value,
@@ -69,7 +69,7 @@ class ResetPasswordScreen extends StatelessWidget {
 
               Obx(() {
                 return CustomTextField(
-                  prefixIconPath: Image.asset(IconPath.email,),
+                  prefixIconPath: Image.asset(IconPath.images,),
                   hintText: 'Re-type Password',
                   controller: controller.confirmPasswordTEController,
                   obscureText: controller.isComPasswordVisible.value,

@@ -65,69 +65,76 @@ class SignUpController extends GetxController {
 
   /// Step 1: Validate form and navigate to referral screen
   Future<void> signUp() async {
-    // Validate inputs before proceeding
-    if (nameTEController.text.trim().isEmpty ||
-        emailTEController.text.trim().isEmpty ||
-        passwordTEController.text.trim().isEmpty) {
-      AppSnackBar.error('Please fill all fields.');
-      return;
-    }
-
-    isLoading.value = true;
-    Get.dialog(
-      Center(child: AppLoader()),
-      barrierDismissible: false,
+    Get.to(
+          () => VerifyCodeScreen(),
+      arguments: {
+        'formScreen': AppRoute.signUpScreen,
+        'email': emailTEController.text.trim(),
+      },
     );
-
-    try {
-      final Map<String, dynamic> requestBody = {
-        "fullName": nameTEController.text.trim(),
-        "email": emailTEController.text.trim(),
-        "password": passwordTEController.text.trim(),
-      };
-
-      log('SignUp Request Body: $requestBody');
-
-      final response = await NetworkCaller().postRequest(
-        AppUrls.register,
-        body: requestBody,
-      );
-
-      log("SignUp API Response: ${response.responseData}");
-
-      if (response.isSuccess) {
-        if (Get.isDialogOpen == true) Get.back();
-        Get.to(
-              () => VerifyCodeScreen(),
-          arguments: {
-            'formScreen': AppRoute.signUpScreen,
-            'email': emailTEController.text.trim(),
-          },
-        );
-      } else if (response.statusCode == 409) {
-        if (Get.isDialogOpen == true) Get.back();
-        AppSnackBar.error(
-          'Email already exists. Please login or try different email.',
-        );
-      } else {
-        if (Get.isDialogOpen == true) Get.back();
-        AppSnackBar.error(
-          response.errorMessage ?? 'Something went wrong. Please try again.',
-        );
-      }
-    } catch (e) {
-      AppLoggerHelper.error('SignUp Error: $e');
-      if (Get.isDialogOpen == true) Get.back();
-      AppSnackBar.error(
-        e.toString().contains('TimeoutException')
-            ? 'Request timed out. Check your internet connection.'
-            : 'Something went wrong! Please try again.',
-      );
-      log("hahaha :   $e");
-    } finally {
-      isLoading.value = false;
-      if (Get.isDialogOpen == true) Get.back();
-    }
+    //   // Validate inputs before proceeding
+    //   if (nameTEController.text.trim().isEmpty ||
+    //       emailTEController.text.trim().isEmpty ||
+    //       passwordTEController.text.trim().isEmpty) {
+    //     AppSnackBar.error('Please fill all fields.');
+    //     return;
+    //   }
+    //
+    //   isLoading.value = true;
+    //   Get.dialog(
+    //     Center(child: AppLoader()),
+    //     barrierDismissible: false,
+    //   );
+    //
+    //   try {
+    //     final Map<String, dynamic> requestBody = {
+    //       "fullName": nameTEController.text.trim(),
+    //       "email": emailTEController.text.trim(),
+    //       "password": passwordTEController.text.trim(),
+    //     };
+    //
+    //     log('SignUp Request Body: $requestBody');
+    //
+    //     final response = await NetworkCaller().postRequest(
+    //       AppUrls.register,
+    //       body: requestBody,
+    //     );
+    //
+    //     log("SignUp API Response: ${response.responseData}");
+    //
+    //     if (response.isSuccess) {
+    //       if (Get.isDialogOpen == true) Get.back();
+    //       Get.to(
+    //             () => VerifyCodeScreen(),
+    //         arguments: {
+    //           'formScreen': AppRoute.signUpScreen,
+    //           'email': emailTEController.text.trim(),
+    //         },
+    //       );
+    //     } else if (response.statusCode == 409) {
+    //       if (Get.isDialogOpen == true) Get.back();
+    //       AppSnackBar.error(
+    //         'Email already exists. Please login or try different email.',
+    //       );
+    //     } else {
+    //       if (Get.isDialogOpen == true) Get.back();
+    //       AppSnackBar.error(
+    //         response.errorMessage ?? 'Something went wrong. Please try again.',
+    //       );
+    //     }
+    //   } catch (e) {
+    //     AppLoggerHelper.error('SignUp Error: $e');
+    //     if (Get.isDialogOpen == true) Get.back();
+    //     AppSnackBar.error(
+    //       e.toString().contains('TimeoutException')
+    //           ? 'Request timed out. Check your internet connection.'
+    //           : 'Something went wrong! Please try again.',
+    //     );
+    //     log("hahaha :   $e");
+    //   } finally {
+    //     isLoading.value = false;
+    //     if (Get.isDialogOpen == true) Get.back();
+    //   }
   }
 
 
