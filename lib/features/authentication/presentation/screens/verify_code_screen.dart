@@ -40,6 +40,13 @@ class VerifyCodeScreen extends StatelessWidget {
               child: Pinput(
                 length: 6,
                 controller: controller.otpTEController,
+                focusNode: controller.focusNode,
+                onChanged: (value) {
+                  controller.updateOtpValue(value);
+                },
+                onCompleted: (value) {
+                  controller.verifyOtp();
+                },
                 defaultPinTheme: PinTheme(
                   width: 48.w,
                   height: 48.h,
@@ -120,7 +127,12 @@ class VerifyCodeScreen extends StatelessWidget {
             Spacer(),
             CustomButton(
                 text: 'Verify',
-                onTap: controller.verifyOtp
+
+              onTap: controller.isButtonEnabled.value
+                  ? () {
+                controller.verifyOtp();
+              } : () {},
+              isOutline: !controller.isButtonEnabled.value, // Outline when not enabled
             )
           ],
         ),
