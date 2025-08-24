@@ -16,7 +16,7 @@ import '../presentation/widgets/sign_up_confirmation_dialog.dart';
 class OtpController extends GetxController {
   // Text Field Controller
   final TextEditingController otpTEController = TextEditingController();
-
+  final focusNode = FocusNode();
   // Timer state
   final RxInt secondsRemaining = 300.obs;
   final RxBool isClickable = false.obs;
@@ -29,7 +29,8 @@ class OtpController extends GetxController {
   String? email;
 
   Timer? _timer;
-
+  var otpValue = ''.obs;
+  var isButtonEnabled = false.obs;
   @override
   void onInit() {
     super.onInit();
@@ -44,7 +45,10 @@ class OtpController extends GetxController {
     otpTEController.dispose();
     super.onClose();
   }
-
+  void updateOtpValue(String value) {
+    otpValue.value = value;
+    isButtonEnabled.value = value.length == 6;
+  }
   // Countdown logic
   void _startCountdown() {
     if (_timer?.isActive ?? false) return;
