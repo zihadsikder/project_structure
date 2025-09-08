@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/cupertino.dart';
 import 'package:gat/routes/app_routes.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'core/bindings/controller_binder.dart';
 import 'core/utils/constants/app_sizer.dart';
 import 'core/utils/constants/app_sizes.dart';
@@ -21,6 +22,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /// Initialize LanguageController
+    //final languageController = Get.put(LanguageController());
     AppSizes().init(context);
     return Sizer(
       builder: (context, orientation, deviceType) {
@@ -39,6 +42,46 @@ class MyApp extends StatelessWidget {
           builder: (context, child) => PlatformUtils.isIOS
               ? CupertinoTheme(data: const CupertinoThemeData(), child: child!)
               : child!,
+          /// Builder wraps widgets with text direction
+          // builder: (context, child) {
+          //   final textDirection = TextDirection.ltr; // Spanish is LTR
+          //   return Directionality(
+          //     textDirection: textDirection,
+          //     child:
+          //     PlatformUtils.isIOS
+          //         ? CupertinoTheme(
+          //       data: CupertinoThemeData(
+          //         textTheme: CupertinoTextThemeData(
+          //           textStyle: GoogleFonts.poppins(),
+          //         ),
+          //       ),
+          //       child: child!,
+          //     )
+          //         : child!,
+          //   );
+          // },
+
+          // translations: AppTranslations(),
+          // locale: Locale(controller.selectedLanguage.value),
+          // fallbackLocale: const Locale('en', 'US'),
+          //
+          // localizationsDelegates: const [
+          //   GlobalMaterialLocalizations.delegate,
+          //   GlobalWidgetsLocalizations.delegate,
+          //   GlobalCupertinoLocalizations.delegate,
+          // ],
+          //
+          // supportedLocales: const [
+          //   Locale('en', 'US'), // English
+          //   Locale('es', 'ES'), // Spanish
+          // ],
+          //
+          //
+          // localeResolutionCallback: (locale, supportedLocales) {
+          //   final selectedLang = controller.selectedLanguage.value;
+          //   log('Resolving locale: device=$locale, selected=$selectedLang');
+          //   return Locale(selectedLang);
+          // },
         );
       },
     );

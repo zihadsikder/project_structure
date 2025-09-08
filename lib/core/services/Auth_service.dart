@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   static const String _tokenKey = 'token';
+  static const String _role = 'UserRole';
 
   // Singleton instance for SharedPreferences
   static late SharedPreferences _preferences;
@@ -12,12 +13,14 @@ class AuthService {
 
   // Private variables to hold token and userId
   static String? _token;
+  static String? _userRole;
 
   // Initialize SharedPreferences (call this during app startup)
   static Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
     // Load token and userId from SharedPreferences into private variables
     _token = _preferences.getString(_tokenKey);
+    _userRole = _preferences.getString(_role);
   }
 
   // Check if a token exists in local storage
@@ -35,7 +38,15 @@ class AuthService {
       log('Error saving token: $e');
     }
   }
+  static Future<void> saveRole(String role) async {
+    try {
+      await _preferences.setString(_role, role);
+      _userRole = role;
 
+    } catch (e) {
+      log('Error saving token: $e');
+    }
+  }
   // Clear authentication data (for logout or clearing auth data)
   static Future<void> logoutUser() async {
     try {
@@ -58,4 +69,5 @@ class AuthService {
 
   // Getter for token
   static String? get token => _token;
+  static String? get role => _userRole;
 }

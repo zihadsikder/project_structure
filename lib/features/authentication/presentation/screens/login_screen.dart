@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gat/core/common/widgets/custom_button.dart';
 
 import 'package:gat/core/common/widgets/custom_text_field.dart';
+import 'package:gat/core/localization/app_texts.dart';
 import 'package:gat/core/utils/constants/app_colors.dart';
 import 'package:gat/core/utils/constants/app_sizer.dart';
 import 'package:gat/core/utils/constants/logo_path.dart';
@@ -12,6 +13,7 @@ import 'package:gat/routes/app_routes.dart';
 import '../../../../core/common/widgets/custom_text.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/utils/constants/icon_path.dart';
 import '../../controllers/social_auth_login.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -57,7 +59,8 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(height: 12.h),
                     Obx(() {
                       return CustomTextField(
-                        hintText: 'Enter your password',
+                        prefixIconPath: Image.asset(IconPath.lock,color: AppColors.textFormFieldBorder,),
+                        hintText: AppText.enterYourPassword.tr,
                         controller: controller.passwordText,
                         obscureText: controller.obSecureText.value,
                         suffixIcon: GestureDetector(
