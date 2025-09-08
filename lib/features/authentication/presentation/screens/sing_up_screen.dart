@@ -49,6 +49,7 @@ class SignUpScreen extends StatelessWidget {
                           color: AppColors.textBold),
                       SizedBox(height: 12.h),
                       CustomTextField(
+                        prefixIconPath: Image.asset(IconPath.user),
                         hintText: 'Enter your full name',
                         controller: controller.nameTEController,
                       ),
@@ -69,7 +70,7 @@ class SignUpScreen extends StatelessWidget {
                           color: AppColors.textBold),
                       SizedBox(height: 12.h),
                       CustomTextField(
-                        prefixIconPath: Image.asset(IconPath.images),
+                        prefixIconPath: Image.asset(IconPath.email),
                         hintText: 'Enter your email address',
                         controller: controller.emailTEController,
                         validator: AppValidator.validateEmail,
@@ -92,6 +93,7 @@ class SignUpScreen extends StatelessWidget {
                       SizedBox(height: 12.h),
                       Obx(() {
                         return CustomTextField(
+                          prefixIconPath: Image.asset(IconPath.lock),
                           hintText: 'Enter your password',
                           controller: controller.passwordTEController,
                           obscureText: controller.isPasswordVisible.value,
@@ -116,7 +118,7 @@ class SignUpScreen extends StatelessWidget {
                       }),
                       Obx(() {
                         return CustomTextField(
-                          //prefixIconPath: Image.asset(IconPath.lock),
+                          prefixIconPath: Image.asset(IconPath.lock),
                           hintText: 'Re-type Password',
                           controller: controller.confirmPasswordTEController,
                           obscureText: controller.isComPasswordVisible.value,
