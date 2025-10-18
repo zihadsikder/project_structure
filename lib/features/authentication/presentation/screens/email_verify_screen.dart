@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:gat/core/common/widgets/custom_button.dart';
-import 'package:gat/core/common/widgets/custom_text_field.dart';
 import 'package:gat/core/utils/constants/app_sizer.dart';
+
 import 'package:gat/features/authentication/controllers/reset_password_controller.dart';
 import 'package:get/get.dart';
+import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_text.dart';
+import '../../../../core/common/widgets/custom_text_field.dart';
 import '../../../../core/utils/constants/app_colors.dart';
 import '../../../../core/utils/constants/logo_path.dart';
 import '../../controllers/forget_pass_controller.dart';

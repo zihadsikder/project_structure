@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gat/core/utils/constants/app_sizer.dart';
-import 'package:gat/features/authentication/controllers/verify_controller.dart';
+
 import 'package:gat/routes/app_routes.dart';
 
 import 'package:pinput/pinput.dart';
@@ -10,6 +10,7 @@ import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_text.dart';
 import '../../../../core/utils/constants/app_colors.dart';
 import '../../../../core/utils/constants/logo_path.dart';
+import '../../controllers/verify_controller.dart';
 
 class VerifyCodeScreen extends StatelessWidget {
    VerifyCodeScreen({super.key});
