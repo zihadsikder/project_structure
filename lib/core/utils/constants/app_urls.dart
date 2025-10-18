@@ -22,7 +22,11 @@ class AppUrls {
 
   /// get Api
   static const String getUserProfile = '$_baseUrl/auth/profile';
+  /// Web socket URL[chat]
+  static const String connectSocket = "ws://206.162.244.146:7008";
 
+  static const String generateImageLink = "$_baseUrl/chat/generateFile";
+  static const String getMyChatLists = "$_baseUrl/chat/getMyChat";
 
 
   static const String deleteUserProfile = '$_baseUrl/auth/profile';
