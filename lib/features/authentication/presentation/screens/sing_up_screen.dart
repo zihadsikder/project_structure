@@ -1,9 +1,8 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
-
 import 'package:gat/core/utils/constants/app_sizer.dart';
-import 'package:gat/features/authentication/controllers/sing_up_controller.dart';
-import 'package:gat/routes/app_routes.dart';
+
+
 
 import '../../../../core/common/widgets/custom_button.dart';
 
@@ -15,6 +14,8 @@ import '../../../../core/utils/constants/logo_path.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/utils/validators/app_validator.dart';
+import '../../../../routes/app_routes.dart';
+import '../../controllers/sing_up_controller.dart';
 class SignUpScreen extends StatelessWidget {
    SignUpScreen({super.key});
 

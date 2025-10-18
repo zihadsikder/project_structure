@@ -39,6 +39,11 @@ dependencies:
   firebase_auth:
   google_sign_in: ^6.3.0
   country_code_picker: ^3.3.0
+  web_socket_channel: ^3.0.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  dio:
+  shimmer: ^3.0.0
 
 
 dev_dependencies:

@@ -1,9 +1,8 @@
-import 'package:gat/features/home/presentaion/screens/home_screen.dart';
-import 'package:gat/features/profile/presentation/screens/profile_screen.dart';
-
-
 import 'package:get/get.dart';
 import '../../../core/services/Auth_service.dart';
+import '../../chat_without_functionality/screens/message_list.dart';
+import '../../home/presentaion/screens/home_screen.dart';
+import '../../profile/presentation/screens/profile_screen.dart';
 
 class NavBarController extends GetxController {
   var selectedIndex = 0.obs;
@@ -13,7 +12,7 @@ class NavBarController extends GetxController {
   List screens = [
     HomeScreen(),
     HomeScreen(),
-    HomeScreen(),
+    MessageScreenWF(),
     ProfileScreen(),
   ];
 
