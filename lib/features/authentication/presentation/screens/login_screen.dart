@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
+import 'package:gap/gap.dart';
 import 'package:gat/core/utils/constants/app_sizer.dart';
 
 
@@ -135,31 +138,50 @@ class LoginScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 32.h),
-                    InkWell(
-                      onTap: (){
-                        socialAuthController.getGoogleUserData();
-
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(
-                              color: AppColors.containerBorder, width: 1),
+                    Platform.isAndroid
+                        ? Obx(
+                          () =>
+                          socialAuthController.isSocialLoading.value
+                          ? Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                                LogoPath.googleLogo, height: 24.h, width: 24.w),
-                            SizedBox(width: 12.w),
-                            CustomText(text: 'Sign In with Google',
-                                color: AppColors.textBold,
-                                fontWeight: FontWeight.w600)
-                          ],
-                        ),
+                      )
+                          : CustomButton(
+                        text: 'Continue with Google',
+                        textColor: AppColors.textPrimary,
+                        isOutline: true,
+                        onTap: () {
+                          /// Implement Google login functionality
+                          socialAuthController.googleLogin();
+                        },
+                        prefixIcon: Image.asset(LogoPath.googleLogoPng),
                       ),
-                    ),
+                    )
+                        : SizedBox.shrink(),
+                    Gap(6.h),
+
+                    Platform.isIOS
+                        ? Obx(
+                          () =>
+                          socialAuthController.isSocialLoading.value
+                          ? Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
+                      )
+                          : CustomButton(
+                        text: 'Continue with Apple',
+                        textColor: AppColors.textPrimary,
+                        isOutline: true,
+                        onTap: () {
+                          /// Implement Google login functionality
+                          socialAuthController.appleLogin();
+                        },
+                        prefixIcon: Image.asset(LogoPath.appleLogo),
+                      ),
+                    )  : SizedBox.shrink(),
+
                     SizedBox(height: 18.h),
 
                     Align(

@@ -6,8 +6,10 @@ class LogoPath{
 
 
   static const  String splashLogo='$_basePath/splash_logo.png';
-  static const  String facebookLogo='$_basePath/facebook_logo.svg';
-  static const  String googleLogo='$_basePath/google _logo.svg';
+  static const  String facebookLogoSvg ='$_basePath/facebookLogo.svg';
+  static const  String googleLogoSvg ='$_basePath/googleLogo.svg';
+  static const  String googleLogoPng ='$_basePath/google.png';
+  static const  String appleLogo ='$_basePath/apple_logo.png';
 
 
 }
