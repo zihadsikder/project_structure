@@ -117,6 +117,7 @@ class SignUpScreen extends StatelessWidget {
                           validator: AppValidator.validatePassword,
                         );
                       }),
+                      SizedBox(height: 12.h),
                       Obx(() {
                         return CustomTextField(
                           prefixIconPath: Image.asset(IconPath.lock),

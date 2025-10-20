@@ -51,11 +51,11 @@ class NavBar extends GetView<NavBarController> {
 
               ),
               _buildNavItem(
-                iconPath: IconPath.home, label: 'Orders',
+                iconPath: IconPath.home, label: 'Chat',
 
               ),
               _buildNavItem(
-                iconPath: IconPath.home, label: 'GAT Tens',
+                iconPath: IconPath.home, label: 'Profile',
               ),
             ],
           ),

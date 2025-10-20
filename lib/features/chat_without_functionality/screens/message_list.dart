@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/message_controller.dart';
 import '../widgets/story_avatar.dart';
+import 'chat_screen.dart';
 
 class MessageScreenWF extends StatelessWidget {
   const MessageScreenWF({super.key});
@@ -100,7 +101,7 @@ class MessageTile extends StatelessWidget {
       onTap: () {
         // Navigate to chat page (replace with your actual chat screen)
         // Example:
-        // Get.to(() => ChatWithoutFunc(userId: message.id));
+        Get.to(() => ChatWithoutFunc(userId: message.id));
       },
       leading: CircleAvatar(
         backgroundImage: NetworkImage(message.avatar),

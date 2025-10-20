@@ -150,7 +150,7 @@ class ProfileScreen extends StatelessWidget {
                   onTap: () {
                     Get.toNamed(AppRoute.personalInformationScreen);
                   },
-                  text: 'Accounts', icon: IconPath.images, // Placeholder icon
+                  text: 'Accounts', icon: IconPath.user, // Placeholder icon
                 ),
                 Gap(8.h),
                 ProfileItemCard(
@@ -159,7 +159,7 @@ class ProfileScreen extends StatelessWidget {
                     Get.toNamed(AppRoute.changePasswordScreen);
                   },
                   text: 'Change Password',
-                  icon: IconPath.images, // Placeholder icon
+                  icon: IconPath.email, // Placeholder icon
                 ),
                 Gap(18.h),
                 InkWell(
