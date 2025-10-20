@@ -26,9 +26,9 @@ void main() async {
   await AuthService.init();
 
   // Initialize PushNotificationService after Firebase is fully initialized
-  final notificationService = PushNotificationService();
-  await notificationService.initialize();
-  await notificationService.setupIOSNotifications();
+  // final notificationService = PushNotificationService();
+  // await notificationService.initialize();
+  // await notificationService.setupIOSNotifications();
 
   // Set preferred device orientation
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);

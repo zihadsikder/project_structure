@@ -151,6 +151,7 @@ class LoginScreen extends StatelessWidget {
                         text: 'Continue with Google',
                         textColor: AppColors.textPrimary,
                         isOutline: true,
+                            backgroundColor: Colors.transparent,
                         onTap: () {
                           /// Implement Google login functionality
                           socialAuthController.googleLogin();
@@ -171,14 +172,16 @@ class LoginScreen extends StatelessWidget {
                         ),
                       )
                           : CustomButton(
+
                         text: 'Continue with Apple',
                         textColor: AppColors.textPrimary,
                         isOutline: true,
+                        backgroundColor: Colors.transparent,
                         onTap: () {
                           /// Implement Google login functionality
                           socialAuthController.appleLogin();
                         },
-                        prefixIcon: Image.asset(LogoPath.appleLogo),
+                        prefixIcon: Image.asset(LogoPath.appleLogo,height: 24,),
                       ),
                     )  : SizedBox.shrink(),
 
