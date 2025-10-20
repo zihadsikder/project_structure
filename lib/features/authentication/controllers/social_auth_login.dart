@@ -163,8 +163,6 @@ class SocialAuthController extends GetxController {
       isSocialLoading.value = false;
     }
   }
-
-
   /// ------> Social Google Login with Firebase <-----
   // final FirebaseAuth _auth = FirebaseAuth.instance;
 
