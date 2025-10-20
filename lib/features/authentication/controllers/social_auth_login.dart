@@ -1,77 +1,239 @@
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../../core/common/widgets/app_snackber.dart';
+import '../../../core/common/widgets/app_toast.dart';
 import '../../../core/services/Auth_service.dart';
 import '../../../core/services/network_caller.dart';
 import '../../../core/utils/constants/app_urls.dart';
 
+import '../../../core/utils/logging/logger.dart';
 import '../../../routes/app_routes.dart';
 
 class SocialAuthController extends GetxController {
+  String fcmToken = "";
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  Future<void> getGoogleUserData() async {
+  final isSocialLoading = false.obs;
+
+  /// Get FCM Token Form Firebase
+  Future<void> initializeFCMToken() async {
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: ['openid', 'email'],
+      await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
       );
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      String? token = await FirebaseMessaging.instance.getToken();
+      if(token == null) {
+        throw Exception("FCM Token is null");
+      }
+      log('<<=================>> FCM Token : $token');
+      fcmToken = token;
+    } catch (e) {
+      log('Error get FCM Token : $e');
+      AppSnackBar.error(
 
-      if (googleUser != null) {
-        debugPrint('User Name: ${googleUser.displayName}');
-        debugPrint('User Email: ${googleUser.email}');
+        "Couldn't initialize push notifications",
+      );
+    }
+  }
+  /// ------> Social Apple Login without Firebase <-----
+  Future<void> appleLogin() async {
+    try {
+      isSocialLoading.value = true;
 
-        var data = {
-          "name": googleUser.displayName,
-          "email": googleUser.email,
-        };
-        final response = await NetworkCaller().postRequest(
-          AppUrls.socialAuth,
-          body: data,
+      if (!Platform.isIOS && !Platform.isMacOS) {
+        AppSnackBar.error( "Apple Sign-In only works on iOS/macOS devices.",
         );
-        if (response.isSuccess) {
-          String token = response.responseData['data']['accessToken'];
+        isSocialLoading.value = false;
+        return;
+      }
 
-          if (token.isNotEmpty) {
-            await AuthService.saveToken(token);
-            Get.offAllNamed(AppRoute.navBar);
-            if (Get.isDialogOpen == true) {
-              Get.back();
-            }
-            debugPrint('the response is ${response.responseData}');
-            debugPrint('the token is $token');
-          }
-          debugPrint(
-            '========>>>User logged in successfully: ${response.responseData}',
+      // Perform Apple Sign-In
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      // Prepare data for backend social login API
+      final body = {
+        "socialLoginId": credential.userIdentifier ?? "",
+        "email": credential.email ?? "",
+        "name":
+        "${credential.givenName ?? ''} ${credential.familyName ?? ''}".trim(),
+        "role": "USER",
+        "image": "", // Apple doesn’t provide photoURL
+        "socialType": "APPLE",
+        "fcmToken": fcmToken,
+        "idToken": credential.identityToken, // Optional if backend verifies token
+      };
+
+      final response = await NetworkCaller().postRequest(
+        AppUrls.socialAuth,
+        body: body,
+      );
+
+      if (response.isSuccess) {
+        String? token = response.responseData['data']['accessToken'];
+        String userID = response.responseData['data']['id'] ?? "";
+
+        if (token != null && token.isNotEmpty) {
+          await AuthService.saveToken(token);
+          //await AuthService.saveUID(userID);
+          AppToasts.successToast(
+            message: response.responseData['message'],
+            toastGravity: ToastGravity.CENTER,
           );
           Get.offAllNamed(AppRoute.navBar);
-        } else {
-          debugPrint('Error logging in with Google: ${response.errorMessage}');
-          AppSnackBar.error(
-
-            'Login failed: ${response.errorMessage}',
-
-          );
         }
+      } else {
+        AppSnackBar.error( response.errorMessage);
       }
-    } on PlatformException catch (e) {
-      debugPrint('PlatformException Details: ${e.code} - ${e.message} - ${e.details}');
-      AppSnackBar.error(
-
-        'Failed to connect to Google Sign-In. Check your configuration.',
-
-      );
-    } catch (error) {
-      debugPrint('Error signing in with Google: $error');
-      AppSnackBar.error(
-
-        'An unexpected error occurred: $error',
-
-      );
-    } finally {}
+    } catch (e) {
+      AppLoggerHelper.error("Error during Apple Login: $e");
+      AppSnackBar.error( "$e");
+    } finally {
+      isSocialLoading.value = false;
+    }
   }
+  /// ------> Social Google Login without Firebase <-----
+  Future<void> googleLogin() async {
+    try {
+      isSocialLoading.value = true;
+
+      // Sign in with Google (no Firebase)
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        isSocialLoading.value = false;
+        return;
+      }
+
+      // Get authentication details
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // Prepare data for backend API
+      final body = {
+        "socialLoginId": googleUser.id, // unique Google ID
+        "email": googleUser.email,
+        "name": googleUser.displayName ?? "",
+        "role": "USER",
+        "image": googleUser.photoUrl ?? "",
+        "socialType": "GOOGLE", // GOOGLE | APPLE | FACEBOOK | NONE
+        "fcmToken": fcmToken,
+        "idToken": googleAuth.idToken, // optional (useful if backend verifies Google token)
+      };
+
+      final response = await NetworkCaller().postRequest(
+        AppUrls.socialAuth,
+        body: body,
+      );
+
+      if (response.isSuccess) {
+        String? token = response.responseData['data']['accessToken'];
+        String userID = response.responseData['data']['id'] ?? "";
+
+        if (token != null && token.isNotEmpty) {
+          await AuthService.saveToken(token);
+          //await AuthService.saveUID(userID);
+          AppToasts.successToast(
+            message: response.responseData['message'],
+            toastGravity: ToastGravity.CENTER,
+          );
+          Get.offAllNamed(AppRoute.navBar);
+        }
+      } else {
+        AppSnackBar.error( response.errorMessage);
+      }
+    } catch (e) {
+      AppLoggerHelper.error("Error during Google Login (no Firebase): $e");
+      AppSnackBar.error( "$e");
+    } finally {
+      isSocialLoading.value = false;
+    }
+  }
+
+
+  /// ------> Social Google Login with Firebase <-----
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  //
+  // Future<void> googleLogin() async {
+  //   try {
+  //     isSocialLoading.value = true;
+  //
+  //     // Google Sign-In
+  //     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+  //     if (googleUser == null) {
+  //       isSocialLoading.value = false;
+  //       return;
+  //     }
+  //
+  //     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+  //
+  //     // Firebase Credential
+  //     final credential = GoogleAuthProvider.credential(
+  //       idToken: googleAuth.idToken,
+  //       accessToken: googleAuth.accessToken,
+  //     );
+  //
+  //     final userCredential = await _auth.signInWithCredential(credential);
+  //     final user = userCredential.user;
+  //
+  //     if (user == null) {
+  //       throw Exception("Firebase returned no user");
+  //     }
+  //
+  //     // Prepare body for backend
+  //     final body = {
+  //       "socialLoginId": user.uid,
+  //       "email": user.email,
+  //       "name": user.displayName,
+  //       "role": "USER",
+  //       "image": user.photoURL ?? '',
+  //       "socialType": "GOOGLE", //  "GOOGLE" | "FACEBOOK" | "APPLE" | "NONE";
+  //       "fcmToken": fcmToken
+  //     };
+  //
+  //     final response = await NetworkCaller().postRequest(
+  //       AppUrls.socialAuth,
+  //       body: body,
+  //     );
+  //
+  //     if (response.isSuccess) {
+  //       String? token = response.responseData['data']['accessToken'];
+  //       String userID = response.responseData['data']['id'] ?? "";
+  //
+  //       if (token != null && token.isNotEmpty) {
+  //         await AuthService.saveToken(token);
+  //         //await AuthService.saveUID(userID);
+  //         AppToasts.successToast(
+  //           message: response.responseData['message'],
+  //           toastGravity: ToastGravity.CENTER,
+  //         );
+  //         Get.offAllNamed(AppRoute.navBar);
+  //       }
+  //     } else {
+  //       AppSnackBar.error(response.errorMessage);
+  //     }
+  //   } catch (e) {
+  //     isSocialLoading.value = false;
+  //     AppLoggerHelper.error('Error during Google Login : $e');
+  //     AppSnackBar.error( "$e");
+  //   } finally {
+  //     isSocialLoading.value = false;
+  //   }
+  // }
 
 }
