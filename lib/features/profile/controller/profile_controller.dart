@@ -10,8 +10,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-import '../../../core/common/widgets/app_loader.dart';
-import '../../../core/common/widgets/app_snackber.dart';
 import '../../../core/common/widgets/app_toast.dart';
 
 import '../../../core/common/widgets/loading_widgets.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../routes/app_routes.dart';
 
 class OnboardingController extends GetxController {
   var selectedPageIndex = 0.obs;
@@ -8,10 +7,6 @@ class OnboardingController extends GetxController {
 
   bool get isLastPage => selectedPageIndex.value == 2;
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   void updatePageIndicator(int index) {
     selectedPageIndex.value = index;

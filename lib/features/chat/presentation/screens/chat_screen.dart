@@ -6,7 +6,6 @@ import 'package:gap/gap.dart';
 import '../../../../core/common/widgets/custom_text.dart';
 import '../../../../core/utils/constants/app_colors.dart';
 import '../../../../core/utils/constants/app_sizer.dart';
-import '../../../../core/localization/app_texts.dart';
 
 import '../../../profile/controller/profile_controller.dart';
 import '../../controller/chat_controller.dart';
@@ -15,7 +14,6 @@ import '../widgets/message_input_box.dart';
 import '../widgets/message_sent_by_me.dart';
 import '../widgets/recieve_message.dart';
 
-import '../../../../routes/app_routes.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({

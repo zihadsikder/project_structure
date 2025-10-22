@@ -1,13 +1,7 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:gat/core/utils/constants/app_urls.dart';
 import 'package:gat/routes/app_routes.dart';
 import 'package:get/get.dart';
 
-import '../../../core/common/widgets/app_loader.dart';
-import '../../../core/common/widgets/app_snackber.dart';
-import '../../../core/services/Auth_service.dart';
-import '../../../core/services/network_caller.dart';
 
 class LoginController extends GetxController {
   final phoneText = TextEditingController();

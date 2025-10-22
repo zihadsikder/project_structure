@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:gat/core/utils/constants/app_sizer.dart';
 
-import 'package:gat/routes/app_routes.dart';
 
 import 'package:pinput/pinput.dart';
 import 'package:get/get.dart';

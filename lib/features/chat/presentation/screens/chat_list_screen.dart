@@ -6,7 +6,6 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/common/widgets/custom_search_field.dart';
 import '../../../../core/common/widgets/custom_text.dart';
-import '../../../../core/localization/app_texts.dart';
 import '../../controller/chat_controller.dart';
 import '../../controller/chat_list_controller.dart';
 import 'chat_screen.dart';
