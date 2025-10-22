@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gat/core/utils/constants/app_sizer.dart';
 
-import 'package:gat/features/authentication/controllers/reset_password_controller.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_text.dart';

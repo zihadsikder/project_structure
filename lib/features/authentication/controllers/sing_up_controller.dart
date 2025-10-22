@@ -1,16 +1,10 @@
-import 'dart:developer';
 
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:gat/core/common/widgets/app_loader.dart';
 import 'package:get/get.dart';
 
-import '../../../core/common/widgets/app_snackber.dart';
 
-import '../../../core/services/network_caller.dart';
 
-import '../../../core/utils/constants/app_urls.dart';
-import '../../../core/utils/logging/logger.dart';
 import '../../../routes/app_routes.dart';
 import '../presentation/screens/verify_code_screen.dart';
 

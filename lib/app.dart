@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter/cupertino.dart';
 import 'package:gat/routes/app_routes.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'core/bindings/controller_binder.dart';
 import 'core/utils/constants/app_sizer.dart';
 import 'core/utils/constants/app_sizes.dart';

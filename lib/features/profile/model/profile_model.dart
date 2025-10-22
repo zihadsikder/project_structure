@@ -8,7 +8,7 @@ class ProfileModel {
   ProfileModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     message = json['message'];
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -60,7 +60,7 @@ class Data {
     location = json['location'];
     businessId = json['businessId'];
     business = json['business'] != null
-        ? new Business.fromJson(json['business'])
+        ? Business.fromJson(json['business'])
         : null;
   }
 

@@ -5,12 +5,9 @@ import 'package:gat/core/utils/constants/app_sizer.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_text.dart';
 import '../../../../core/common/widgets/universal_Image.dart';
-import '../../../../core/services/Auth_service.dart';
 import '../../../../core/utils/constants/app_colors.dart';
-import '../../../../core/utils/constants/app_texts.dart';
 
 import '../../../../core/utils/constants/icon_path.dart';
 import '../../../../routes/app_routes.dart';

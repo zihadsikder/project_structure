@@ -1,13 +1,7 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:gat/core/common/widgets/app_loader.dart';
-import 'package:gat/core/utils/constants/app_urls.dart';
 import 'package:get/get.dart';
 
-import '../../../core/common/widgets/app_snackber.dart';
-import '../../../core/services/network_caller.dart';
-import '../../../core/utils/logging/logger.dart';
 
 import '../../../routes/app_routes.dart';
 import '../presentation/screens/verify_code_screen.dart';

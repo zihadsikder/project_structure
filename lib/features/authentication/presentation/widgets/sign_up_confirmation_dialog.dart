@@ -20,7 +20,7 @@ void showSignupConfirmationDialog() {
           CustomText(
             textAlign: TextAlign.center,
 
-            text: "Email Successfully\Verified",
+            text: "Email SuccessfullyVerified",
           ),
         ],
       ),

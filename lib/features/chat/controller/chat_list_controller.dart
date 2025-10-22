@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../../core/services/Auth_service.dart';
 import '../../../../../core/services/network_caller.dart';
