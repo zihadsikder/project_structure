@@ -45,6 +45,7 @@ dependencies:
   dio:
   shimmer: ^3.0.0
   fluttertoast: 8.2.8
+  in_app_purchase: ^3.2.3
 
 
 dev_dependencies:
@@ -64,4 +65,8 @@ flutter:
     - assets/icons/
     - assets/logos/
     - assets/will_be_delete/
+
+
+
+
 

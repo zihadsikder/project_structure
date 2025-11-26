@@ -50,5 +50,8 @@
         <string>tel</string>
         <string>mailto</string>
     </array>
+    	<!-- In-App Purchase (এটা না থাকলে Apple Pay আসবে না) -->
+            <key>com.apple.InAppPurchase</key>
+            <true/>
 </dict>
 </plist>
