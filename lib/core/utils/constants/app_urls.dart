@@ -28,7 +28,8 @@ class AppUrls {
   static const String generateImageLink = "$_baseUrl/chat/generateFile";
   static const String getMyChatLists = "$_baseUrl/chat/getMyChat";
 
-
+/// In app purchase
+  static const String sendInAppPurchaseData = '$_baseUrl/subscription';
   static const String deleteUserProfile = '$_baseUrl/auth/profile';
 
 }

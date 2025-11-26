@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Required for in-app purchases -->
+    <uses-permission android:name="com.android.vending.BILLING" />
     <application
         android:label="Structure"
         android:name="${applicationName}"
@@ -26,6 +29,21 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- This is REQUIRED for Google Play Billing v5+ -->
+        <service
+            android:name="com.android.vending.billing.InAppBillingService"
+            android:exported="false"
+            tools:ignore="MissingClass" />
+        <!-- Add this meta-data (critical for pending purchases & billing v5+) -->
+        <meta-data
+            android:name="com.android.vending.billing.IN_APP_BILLING"
+            android:value="true" />
+        <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <!--Google Play Billing-->
+        <meta-data
+            android:name="com.google.android.play.billingclient.version"
+            android:value="6.0.1" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
