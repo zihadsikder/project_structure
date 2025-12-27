@@ -41,7 +41,7 @@ class EmailVerifyScreen extends StatelessWidget {
                 Spacer(),
                 CustomButton(
                     text: 'Continue',
-                    onTap: controller.forgetPass)
+                    onTap: controller.forgetPassword)
               ],
             ),
           )),

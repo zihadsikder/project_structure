@@ -290,7 +290,7 @@ class ProfileController extends GetxController {
       LoadingWidget();
       final response = await NetworkCaller().deleteRequest(
         AppUrls.deleteUserProfile,
-        'Bearer ${AuthService.token}',
+       token: 'Bearer ${AuthService.token}',
       );
       if (response.isSuccess) {
         HideLoadingWidget();

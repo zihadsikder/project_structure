@@ -2,102 +2,125 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import '../models/response_data.dart';
 import '../utils/logging/logger.dart';
 import 'Auth_service.dart';
 
 class NetworkCaller {
-  final int timeoutDuration = 10;
+  final int timeoutDuration = 12;
 
   Future<ResponseData> getRequest(String endpoint, {String? token}) async {
-    AppLoggerHelper.info('GET Request: $endpoint');
+    AppLoggerHelper.info('GET → $endpoint');
     try {
-      final Response response = await get(
+      final response = await http
+          .get(
         Uri.parse(endpoint),
-        headers: {
-          'Authorization': token ?? AuthService.token.toString(),
-          'Content-type': 'application/json',
-        },
-      ).timeout(Duration(seconds: timeoutDuration));
+        headers: _buildHeaders(token),
+      )
+          .timeout(Duration(seconds: timeoutDuration));
       return _handleResponse(response);
-    } catch (e) {
+    } catch (e, stack) {
+      AppLoggerHelper.error('GET Error: $e\nStack: $stack');
       return _handleError(e);
     }
   }
 
   Future<ResponseData> postRequest(String endpoint,
       {Map<String, dynamic>? body, String? token}) async {
-    AppLoggerHelper.info('POST Request: $endpoint');
-    AppLoggerHelper.info('Request Body: ${jsonEncode(body.toString())}');
+    AppLoggerHelper.info('POST → $endpoint');
+    if (body != null) {
+      AppLoggerHelper.info('Body: ${jsonEncode(body)}');
+    }
 
     try {
-      final Response response = await post(
+      final response = await http
+          .post(
         Uri.parse(endpoint),
-        headers: {
-          'Authorization': token ?? AuthService.token.toString(),
-          'Content-type': 'application/json',
-        },
-        body: jsonEncode(body),
-      ).timeout(Duration(seconds: timeoutDuration));
+        headers: _buildHeaders(token),
+        body: body != null ? jsonEncode(body) : null,
+      )
+          .timeout(Duration(seconds: timeoutDuration));
       return _handleResponse(response);
-    } catch (e) {
+    } catch (e, stack) {
+      AppLoggerHelper.error('POST Error: $e\nStack: $stack');
       return _handleError(e);
     }
   }
 
   Future<ResponseData> putRequest(String endpoint,
       {Map<String, dynamic>? body, String? token}) async {
-    AppLoggerHelper.info('PUT Request: $endpoint');
-    AppLoggerHelper.info('Request Body: ${jsonEncode(body.toString())}');
+    AppLoggerHelper.info('PUT → $endpoint');
+    if (body != null) {
+      AppLoggerHelper.info('Body: ${jsonEncode(body)}');
+    }
 
     try {
-      final Response response = await put(
+      final response = await http
+          .put(
         Uri.parse(endpoint),
-        headers: {
-          'Authorization': token ?? AuthService.token.toString(),
-          'Content-type': 'application/json',
-        },
-        body: jsonEncode(body),
-      ).timeout(Duration(seconds: timeoutDuration));
+        headers: _buildHeaders(token),
+        body: body != null ? jsonEncode(body) : null,
+      )
+          .timeout(Duration(seconds: timeoutDuration));
       return _handleResponse(response);
-    } catch (e) {
+    } catch (e, stack) {
+      AppLoggerHelper.error('PUT Error: $e\nStack: $stack');
       return _handleError(e);
     }
   }
 
-  Future<ResponseData> deleteRequest(String endpoint, String? token) async {
-    AppLoggerHelper.info('DELETE Request: $endpoint');
+  Future<ResponseData> deleteRequest(String endpoint, {String? token}) async {
+    AppLoggerHelper.info('DELETE → $endpoint');
+
     try {
-      final Response response = await delete(
+      final response = await http
+          .delete(
         Uri.parse(endpoint),
-        headers: {
-          'Authorization': token ?? AuthService.token.toString(),
-          'Content-type': 'application/json',
-        },
-      ).timeout(Duration(seconds: timeoutDuration));
+        headers: _buildHeaders(token),
+      )
+          .timeout(Duration(seconds: timeoutDuration));
       return _handleResponse(response);
-    } catch (e) {
+    } catch (e, stack) {
+      AppLoggerHelper.error('DELETE Error: $e\nStack: $stack');
       return _handleError(e);
     }
   }
 
-  // Handle the response from the server
-  Future<ResponseData> _handleResponse(http.Response response) async {
-    AppLoggerHelper.info('Response Status: ${response.statusCode}');
-    AppLoggerHelper.info('Response Body: ${response.body}');
+  // Headers make function
+  Map<String, String> _buildHeaders(String? token) {
+    final authToken = token ?? AuthService.token?.toString();
+    return {
+      'Authorization': authToken ?? '',
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+  }
+
+  // Response hgandelling
+  ResponseData _handleResponse(http.Response response) {
+    AppLoggerHelper.info('Status: ${response.statusCode} | Body: ${response.body.substring(0, response.body.length.clamp(0, 500))}...');
 
     try {
-      final decodedResponse = jsonDecode(response.body);
+      final dynamic decoded = jsonDecode(response.body);
+
+      // Error message extract
+      String? errorMessage;
+      if (decoded is Map<String, dynamic>) {
+        errorMessage = decoded['message'] as String? ??
+            decoded['error'] as String? ??
+            decoded['msg'] as String?;
+      }
+
       switch (response.statusCode) {
         case 200:
         case 201:
           return ResponseData(
             isSuccess: true,
             statusCode: response.statusCode,
-            responseData: decodedResponse,
+            responseData: decoded,
             errorMessage: '',
           );
+
         case 204:
           return ResponseData(
             isSuccess: true,
@@ -105,87 +128,90 @@ class NetworkCaller {
             responseData: null,
             errorMessage: '',
           );
-        case 400:
+
+        case 400: // Bad Request (validation error)
           return ResponseData(
             isSuccess: false,
-            statusCode: response.statusCode,
-            errorMessage: decodedResponse['error'] ??
-                'There was an issue with your request. Please try again.',
-            responseData: null,
+            statusCode: 400,
+            errorMessage: errorMessage ?? 'Invalid request. Please check your input.',
+            responseData: decoded,
           );
-        case 401:
-          await AuthService.logoutUser();
+
+        case 401: // Unauthorized
+          AuthService.logoutUser(); // auto update
           return ResponseData(
             isSuccess: false,
-            statusCode: response.statusCode,
-            errorMessage: 'You are not authorized. Please log in to continue.',
+            statusCode: 401,
+            errorMessage: errorMessage ?? 'Session expired. Please log in again.',
             responseData: null,
           );
-        case 403:
+
+        case 403: // Forbidden
           return ResponseData(
             isSuccess: false,
-            statusCode: response.statusCode,
-            errorMessage: 'You do not have permission to access this resource.',
+            statusCode: 403,
+            errorMessage: errorMessage ?? 'You do not have permission to perform this action.',
             responseData: null,
           );
+
         case 404:
           return ResponseData(
             isSuccess: false,
-            statusCode: response.statusCode,
-            errorMessage: 'The resource you are looking for was not found.',
+            statusCode: 404,
+            errorMessage: errorMessage ?? 'Resource not found.',
             responseData: null,
           );
+
         case 500:
+        case 502:
+        case 503:
           return ResponseData(
             isSuccess: false,
             statusCode: response.statusCode,
-            errorMessage: 'Internal server error. Please try again later.',
+            errorMessage: errorMessage ?? 'Server error. Please try again later.',
             responseData: null,
           );
+
         default:
           return ResponseData(
             isSuccess: false,
             statusCode: response.statusCode,
-            errorMessage: decodedResponse['error'] ??
-                'Something went wrong. Please try again.',
-            responseData: null,
+            errorMessage: errorMessage ?? 'Unexpected error occurred.',
+            responseData: decoded,
           );
       }
     } catch (e) {
+      AppLoggerHelper.error('Response parsing failed: $e');
       return ResponseData(
         isSuccess: false,
         statusCode: response.statusCode,
-        errorMessage: 'Failed to process the response. Please try again later.',
+        errorMessage: 'Failed to understand server response.',
         responseData: null,
       );
     }
   }
 
-  // Handle errors during the request process
+  // Client-side errors
   ResponseData _handleError(dynamic error) {
-    log('Request Error: $error');
-
     if (error is TimeoutException) {
       return ResponseData(
         isSuccess: false,
         statusCode: 408,
-        errorMessage:
-            'Request timed out. Please check your internet connection and try again.',
+        errorMessage: 'Request timed out. Check your internet and try again.',
         responseData: null,
       );
     } else if (error is http.ClientException) {
       return ResponseData(
         isSuccess: false,
-        statusCode: 500,
-        errorMessage:
-            'Network error occurred. Please check your connection and try again.',
+        statusCode: 503,
+        errorMessage: 'Network issue. Please check your connection.',
         responseData: null,
       );
     } else {
       return ResponseData(
         isSuccess: false,
         statusCode: 500,
-        errorMessage: 'Unexpected error occurred. Please try again later.',
+        errorMessage: 'Something went wrong. Please try again.',
         responseData: null,
       );
     }

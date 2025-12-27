@@ -65,14 +65,14 @@ class LoginScreen extends StatelessWidget {
                         prefixIconPath: Image.asset(IconPath.lock,color: AppColors.textFormFieldBorder,),
                         hintText: AppText.enterYourPassword.tr,
                         controller: controller.passwordText,
-                        obscureText: controller.obSecureText.value,
+                        obscureText: controller.isPasswordHidden.value,
                         suffixIcon: GestureDetector(
                           onTap:
                               () =>
-                          controller.obSecureText.value =
-                          !controller.obSecureText.value,
+                          controller.isPasswordHidden.value =
+                          !controller.isPasswordHidden.value,
                           child:
-                          controller.obSecureText.value
+                          controller.isPasswordHidden.value
                               ? Icon(
                             Icons.visibility_off_outlined,
                             color: Colors.grey,
