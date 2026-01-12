@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gat/core/utils/constants/app_sizer.dart';
 import 'package:gat/features/in_app_purchase/controller.dart';
@@ -120,7 +121,7 @@ class SubscribeScreen extends StatelessWidget {
 
                     SizedBox(height: 16.h),
 
-                    // ---- CTA BUTTON ----
+                    /// ---- CTA BUTTON ----
                     Obx(() {
                       final canTap = !c.isLoading.value &&
                           !c.isProductLoading.value &&
@@ -143,6 +144,66 @@ class SubscribeScreen extends StatelessWidget {
                             : null,
                       );
                     }),
+
+                    /// ---- Links to Privacy & Terms ----
+
+                    SizedBox(height: 16.h),
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text:
+                            "Subscription automatically renews unless auto-renewal is turned off at least 24 hours before the end of the current period.By subscribing you agree to our ",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          TextSpan(
+                            text: "Privacy Policy",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.underline,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                // Open Privacy Policy URL
+                                // launchURL(
+                                //   "https://privacy.moneysavingtechniques.com/",
+                                // );
+                              },
+                          ),
+                          TextSpan(
+                            text: " and ",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          TextSpan(
+                            text: "Terms of Use",
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.underline,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                // Open Terms of Use (EULA) URL
+                                // launchURL(
+                                //   "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
+                                // );
+                              },
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 );
               }),

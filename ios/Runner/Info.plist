@@ -53,5 +53,14 @@
     	<!-- In-App Purchase (এটা না থাকলে Apple Pay আসবে না) -->
             <key>com.apple.InAppPurchase</key>
             <true/>
+
+    <!-- Photo / Gallery Permission -->
+      <key>NSPhotoLibraryUsageDescription</key>
+      <string>We need access to your photo library to let you choose and upload images.</string>
+
+  <!-- If you use camera to take photo (optional, but add if any camera feature exists) -->
+  <key>NSCameraUsageDescription</key>
+  <string>We need camera access so you can take and upload photos.</string>
+
 </dict>
 </plist>
