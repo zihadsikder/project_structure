@@ -6,8 +6,9 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_text.dart';
+import '../../../../core/localization/app_texts.dart';
 import '../../../../core/utils/constants/app_colors.dart';
-import '../../../../core/utils/constants/app_texts.dart';
+
 import '../../../../core/utils/validators/app_validator.dart';
 import '../../controller/profile_controller.dart';
 

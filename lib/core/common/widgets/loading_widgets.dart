@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 import '../../utils/constants/app_colors.dart';
 
-// ignore: non_constant_identifier_names
+/// ignore: non_constant_identifier_names
 LoadingWidget() {
   Get.dialog(
     Center(child: SpinKitCircle(color: AppColors.primary, size: 50.0)),
@@ -12,7 +12,7 @@ LoadingWidget() {
   );
 }
 
-// ignore: non_constant_identifier_names
+/// ignore: non_constant_identifier_names
 HideLoadingWidget() {
   if (Get.isDialogOpen ?? false) {
     Get.back();
