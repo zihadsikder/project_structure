@@ -144,6 +144,23 @@ class SubscribeScreen extends StatelessWidget {
                             : null,
                       );
                     }),
+                    /// ---- Restore Purchases ----
+                    SizedBox(height: 20.h),
+                    Align(
+                      alignment: Alignment.center,
+                      child: GestureDetector(
+                        onTap: () {
+                          c.restoreAndCheckSubscription();
+                        },
+                        child: CustomText(
+                          text: "Restore Purchases",
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16.sp,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
 
                     /// ---- Links to Privacy & Terms ----
 
