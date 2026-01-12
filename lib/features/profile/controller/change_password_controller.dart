@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -13,10 +12,11 @@ import '../../../core/utils/logging/logger.dart';
 import '../../../routes/app_routes.dart';
 
 class ChangePasswordController extends GetxController {
-
-  final TextEditingController currentPasswordController = TextEditingController();
+  final TextEditingController currentPasswordController =
+      TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   // Observable booleans for password visibility
   final RxBool isCurrentPasswordVisible = false.obs;
@@ -63,7 +63,8 @@ class ChangePasswordController extends GetxController {
 
       final data = response.responseData ?? {};
       final success = data['success'] == true;
-      final message = data['message'] ?? 'Failed to change password. Please try again.';
+      final message =
+          data['message'] ?? 'Failed to change password. Please try again.';
 
       if (success) {
         AppToasts.successToast(
@@ -74,18 +75,13 @@ class ChangePasswordController extends GetxController {
         newPasswordController.clear();
         confirmPasswordController.clear();
         Get.offNamed(AppRoute.navBar);
-      }
-      else if (response.statusCode == 203) {
+      } else if (response.statusCode == 203) {
         AppToasts.errorToast(
           message: "Invalid password",
           toastGravity: ToastGravity.TOP,
         );
-      }
-      else {
-        AppToasts.errorToast(
-          message: message,
-          toastGravity: ToastGravity.TOP,
-        );
+      } else {
+        AppToasts.errorToast(message: message, toastGravity: ToastGravity.TOP);
         AppLoggerHelper.error(
           'Failed to change password: ${response.statusCode} - $message',
         );
@@ -99,7 +95,4 @@ class ChangePasswordController extends GetxController {
       AppLoggerHelper.error(e.toString());
     }
   }
-
-
-
 }

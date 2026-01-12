@@ -3,146 +3,104 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppSnackBar {
-  /// Default Configuration
-  static const Duration _defaultDuration = Duration(seconds: 3);
-  static const EdgeInsets _defaultMargin = EdgeInsets.all(10.0);
-  static const double _defaultBorderRadius = 10.0;
+  AppSnackBar._();
 
-  /// Default Text Styles
-  static TextStyle get _defaultTitleStyle => GoogleFonts.inter(
+  static const Duration _defaultDuration = Duration(seconds: 3);
+  static const double _defaultRadius = 16.0;
+
+  static TextStyle get _titleStyle => GoogleFonts.outfit(
     fontSize: 16,
     fontWeight: FontWeight.bold,
     color: Colors.white,
   );
 
-  static TextStyle get _defaultMessageStyle => GoogleFonts.inter(
+  static TextStyle get _messageStyle => GoogleFonts.outfit(
     fontSize: 14,
-    fontWeight: FontWeight.w500,
-    color: Colors.white,
+    fontWeight: FontWeight.w400,
+    color: Colors.white.withOpacity(0.9),
   );
 
-  /// General Show SnackBar Method
-  static void show({
-    required String title,
-    required String message,
-    Color backgroundColor = Colors.black87,
-    Color textColor = Colors.white,
-    IconData? icon,
-    Widget? iconWidget,
-    SnackPosition position = SnackPosition.TOP,
-    SnackStyle style = SnackStyle.FLOATING,
-    Duration duration = _defaultDuration,
-    EdgeInsets margin = _defaultMargin,
-    TextStyle? titleStyle,
-    TextStyle? messageStyle,
-    bool isDismissible = true,
-    double borderRadius = _defaultBorderRadius,
-  }) {
-    Get.snackbar(
-      title,
-      message,
-      snackPosition: position,
-      backgroundColor: backgroundColor,
-      colorText: textColor,
-      borderRadius: borderRadius,
-      margin: margin,
-      padding: const EdgeInsets.all(15.0),
-      duration: duration,
-      isDismissible: isDismissible,
-      snackStyle: style,
-      icon: iconWidget ??
-          (icon != null
-              ? Icon(icon, color: textColor, size: 24)
-              : null),
-      titleText: Text(title, style: titleStyle ?? _defaultTitleStyle),
-      messageText: Text(message, style: messageStyle ?? _defaultMessageStyle),
+  /// Success SnackBar
+  static void success(String message, {String title = 'Success'}) {
+    _show(
+      title: title,
+      message: message,
+      backgroundColor: const Color(0xFF10B981), // Emerald
+      icon: Icons.check_circle_rounded,
     );
   }
 
   /// Error SnackBar
   static void error(String message, {String title = 'Error'}) {
-    show(
+    _show(
       title: title,
       message: message,
-      backgroundColor: Colors.red.withOpacity(0.9),
-      icon: Icons.error_outline,
+      backgroundColor: const Color(0xFFEF4444), // Red
+      icon: Icons.error_rounded,
     );
   }
 
-  /// Success SnackBar
-  static void success(String message, {String title = 'Success'}) {
-    show(
+  /// Warning SnackBar
+  static void warning(String message, {String title = 'Warning'}) {
+    _show(
       title: title,
       message: message,
-      backgroundColor: Colors.green.withOpacity(0.9),
-      icon: Icons.check_circle_outline,
+      backgroundColor: const Color(0xFFF59E0B), // Amber
+      icon: Icons.warning_rounded,
     );
   }
 
   /// Info SnackBar
   static void info(String message, {String title = 'Info'}) {
-    show(
+    _show(
       title: title,
       message: message,
-      backgroundColor: Colors.blue.withOpacity(0.9),
-      icon: Icons.info_outline,
+      backgroundColor: const Color(0xFF3B82F6), // Blue
+      icon: Icons.info_rounded,
     );
   }
 
-  /// Custom Toast (Bottom, GROUNDED style)
-  static void toast({
-    required String message,
-    String? title,
-    Color backgroundColor = Colors.black87,
-    Color textColor = Colors.white,
-    IconData? icon,
-    Widget? iconWidget,
-    Duration duration = _defaultDuration,
-    SnackStyle style = SnackStyle.GROUNDED,
-  }) {
+  /// Modern Toast implementation
+  static void toast(String message) {
     Get.rawSnackbar(
-      snackStyle: style,
-      backgroundColor: backgroundColor,
-      duration: duration,
-      onTap: (_) => Get.closeAllSnackbars(),
-      icon: iconWidget ??
-          (icon != null
-              ? Icon(icon, color: textColor, size: 20)
-              : null),
-      titleText: title != null
-          ? Text(title, style: _defaultTitleStyle)
-          : null,
-      messageText: Text(message, style: _defaultMessageStyle),
+      messageText: Text(
+        message,
+        textAlign: TextAlign.center,
+        style: _messageStyle.copyWith(color: Colors.white),
+      ),
+      backgroundColor: Colors.black.withOpacity(0.8),
+      borderRadius: 100,
+      margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 2),
     );
   }
 
-  /// Error Toast
-  static void errorToast(String message, {String? title}) {
-    toast(
-      title: title,
-      message: message,
-      backgroundColor: Colors.red,
-      icon: Icons.error,
-    );
-  }
-
-  /// Success Toast
-  static void successToast(String message, {String? title}) {
-    toast(
-      title: title,
-      message: message,
-      backgroundColor: Colors.green,
-      icon: Icons.check_circle,
-    );
-  }
-
-  /// Info Toast
-  static void infoToast(String message, {String? title}) {
-    toast(
-      title: title,
-      message: message,
-      backgroundColor: Colors.blue,
-      icon: Icons.info_outline,
+  static void _show({
+    required String title,
+    required String message,
+    required Color backgroundColor,
+    required IconData icon,
+  }) {
+    Get.snackbar(
+      title,
+      message,
+      titleText: Text(title, style: _titleStyle),
+      messageText: Text(message, style: _messageStyle),
+      icon: Icon(icon, color: Colors.white, size: 28),
+      backgroundColor: backgroundColor.withOpacity(0.95),
+      colorText: Colors.white,
+      snackPosition: SnackPosition.TOP,
+      margin: const EdgeInsets.all(16),
+      borderRadius: _defaultRadius,
+      duration: _defaultDuration,
+      isDismissible: true,
+      forwardAnimationCurve: Curves.easeOutBack,
+      mainButton: TextButton(
+        onPressed: () => Get.back(),
+        child: const Text('DISMISS', style: TextStyle(color: Colors.white70)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
     );
   }
 }

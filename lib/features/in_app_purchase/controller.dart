@@ -8,9 +8,6 @@ import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
-
 import '../../../core/services/network_caller.dart';
 import '../../../core/utils/constants/app_urls.dart';
 
@@ -21,11 +18,11 @@ import 'exapmple_payment_queue.dart';
 class SubscriptionController extends GetxController {
   final InAppPurchase _iap = InAppPurchase.instance;
 
+  static const String monthlyIdAndroid = 'monthly_2026'; // Google Play
+  static const String monthlyIdIOS = 'monthly_2026'; // App Store Connect
 
-  static const String monthlyIdAndroid = 'monthly_2026';        // Google Play
-  static const String monthlyIdIOS = 'monthly_2026';            // App Store Connect
-
-  static String get monthlyId => Platform.isAndroid ? monthlyIdAndroid : monthlyIdIOS;
+  static String get monthlyId =>
+      Platform.isAndroid ? monthlyIdAndroid : monthlyIdIOS;
 
   RxBool isSubscribed = false.obs;
   RxBool isLoading = false.obs;
@@ -53,10 +50,10 @@ class SubscriptionController extends GetxController {
 
     /// iOS Specific Delegate
     if (Platform.isIOS) {
-      final iosAddition = _iap.getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
+      final iosAddition =
+          _iap.getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
       await iosAddition.setDelegate(ExamplePaymentQueueDelegate());
     }
-
 
     await _loadProducts();
     _listenToPurchaseUpdates();
@@ -77,14 +74,11 @@ class SubscriptionController extends GetxController {
   }
 
   void _listenToPurchaseUpdates() {
-    _purchaseSub = _iap.purchaseStream.listen(
-          (purchases) async {
-        for (final purchase in purchases) {
-          await _handlePurchase(purchase);
-        }
-      },
-      onError: (e) => Get.snackbar("Error", "Purchase stream error: $e"),
-    );
+    _purchaseSub = _iap.purchaseStream.listen((purchases) async {
+      for (final purchase in purchases) {
+        await _handlePurchase(purchase);
+      }
+    }, onError: (e) => Get.snackbar("Error", "Purchase stream error: $e"));
   }
 
   // Main purchase function
@@ -100,7 +94,9 @@ class SubscriptionController extends GetxController {
     isLoading.value = true;
     try {
       final purchaseParam = PurchaseParam(productDetails: product);
-      await _iap.buyNonConsumable(purchaseParam: purchaseParam); // Correct for subscriptions
+      await _iap.buyNonConsumable(
+        purchaseParam: purchaseParam,
+      ); // Correct for subscriptions
     } catch (e) {
       Get.snackbar("Error", "Failed to start purchase: $e");
       isLoading.value = false;
@@ -127,7 +123,11 @@ class SubscriptionController extends GetxController {
         if (valid) {
           isSubscribed.value = true;
           await _saveSubscriptionStatus(true);
-          Get.snackbar("Success", "Subscription activated!", backgroundColor: AppColors.primary);
+          Get.snackbar(
+            "Success",
+            "Subscription activated!",
+            backgroundColor: AppColors.primary,
+          );
           if (Get.isOverlaysOpen) Get.back();
         }
         isLoading.value = false;
@@ -137,7 +137,6 @@ class SubscriptionController extends GetxController {
         isLoading.value = false;
         Get.snackbar("Cancelled", "Purchase was cancelled");
         break;
-
     }
 
     // Always complete the purchase
@@ -146,9 +145,8 @@ class SubscriptionController extends GetxController {
     }
   }
 
-
   // Server-side verification + send data to your backend
-// Server-side verification + send data to your backend (FIXED FOR iOS & Android)
+  // Server-side verification + send data to your backend (FIXED FOR iOS & Android)
   Future<bool> _verifyAndSendToBackend(PurchaseDetails purchase) async {
     try {
       final token = AuthService.token;
@@ -167,15 +165,22 @@ class SubscriptionController extends GetxController {
 
         // Wait up to 15 seconds for Apple to provide the receipt
         for (int i = 0; i < 15; i++) {
-          if (appStoreDetails.verificationData.serverVerificationData.isNotEmpty) {
-            receiptData = appStoreDetails.verificationData.serverVerificationData;
+          if (appStoreDetails
+              .verificationData
+              .serverVerificationData
+              .isNotEmpty) {
+            receiptData =
+                appStoreDetails.verificationData.serverVerificationData;
             break;
           }
           await Future.delayed(const Duration(seconds: 1));
         }
 
         if (receiptData == null || receiptData.isEmpty) {
-          Get.snackbar("Warning", "Receipt not ready. Using local mode (testing)");
+          Get.snackbar(
+            "Warning",
+            "Receipt not ready. Using local mode (testing)",
+          );
           return true; // Allow in test mode
         }
       }
@@ -194,16 +199,17 @@ class SubscriptionController extends GetxController {
         "platform": platform,
         "price": monthlyProduct?.price ?? "0.0",
         "currency": monthlyProduct?.currencyCode ?? "USD",
-
       };
 
       log("Sending to backend: $requestBody");
 
-      final response = await NetworkCaller().postRequest(
-        AppUrls.sendInAppPurchaseData,
-        body: requestBody,
-        token: 'Bearer $token',
-      ).timeout(const Duration(seconds: 30));
+      final response = await NetworkCaller()
+          .postRequest(
+            AppUrls.sendInAppPurchaseData,
+            body: requestBody,
+            token: 'Bearer $token',
+          )
+          .timeout(const Duration(seconds: 30));
 
       if (response.isSuccess && response.statusCode == 200) {
         final json = response.responseData;
@@ -214,7 +220,6 @@ class SubscriptionController extends GetxController {
 
       Get.snackbar("Server Error", "Subscription not activated on server");
       return false;
-
     } catch (e) {
       if (kDebugMode) {
         print("Verification failed: $e");
@@ -255,7 +260,8 @@ class SubscriptionController extends GetxController {
   void onClose() {
     _purchaseSub.cancel();
     if (Platform.isIOS) {
-      final iosAddition = _iap.getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
+      final iosAddition =
+          _iap.getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
       iosAddition.setDelegate(null);
     }
     super.onClose();

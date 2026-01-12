@@ -63,7 +63,6 @@ class ProfileController extends GetxController {
     }
   }
 
-
   /// Method to toggle notification state
   void toggleNotification() async {
     isNotificationEnabled.value = !isNotificationEnabled.value;
@@ -290,14 +289,11 @@ class ProfileController extends GetxController {
       LoadingWidget();
       final response = await NetworkCaller().deleteRequest(
         AppUrls.deleteUserProfile,
-       token: 'Bearer ${AuthService.token}',
+        token: 'Bearer ${AuthService.token}',
       );
       if (response.isSuccess) {
         HideLoadingWidget();
-        AppToasts.successToast(
-          message: 'Your account deleted successfully.',
-          toastGravity: ToastGravity.TOP,
-        );
+        AppToasts.successToast(message: 'Your account deleted successfully.');
         //Get.offAll(()=>LoginScreen());
       } else {
         HideLoadingWidget();

@@ -44,13 +44,16 @@ class ChatListController extends GetxController {
   Future<void> fetchChatListDetails() async {
     isLoading.value = true;
     try {
-      final response = await NetworkCaller()
-          .getRequest(AppUrls.getMyChatLists, token: 'Bearer $token');
+      final response = await NetworkCaller().getRequest(
+        AppUrls.getMyChatLists,
+        token: 'Bearer $token',
+      );
 
       if (response.isSuccess) {
         if (response.responseData is Map<String, dynamic>) {
-          chatListDetails.value =
-              GetChatListModel.fromJson(response.responseData);
+          chatListDetails.value = GetChatListModel.fromJson(
+            response.responseData,
+          );
           AppLoggerHelper.info("Chat list fetched successfully");
         } else {
           throw Exception('Unexpected response data format');
@@ -69,12 +72,15 @@ class ChatListController extends GetxController {
   /// Refresh chat list (without loader)
   Future<void> refreshChatList() async {
     try {
-      final response = await NetworkCaller()
-          .getRequest(AppUrls.getMyChatLists, token: 'Bearer $token');
+      final response = await NetworkCaller().getRequest(
+        AppUrls.getMyChatLists,
+        token: 'Bearer $token',
+      );
 
       if (response.isSuccess && response.responseData is Map<String, dynamic>) {
-        chatListDetails.value =
-            GetChatListModel.fromJson(response.responseData);
+        chatListDetails.value = GetChatListModel.fromJson(
+          response.responseData,
+        );
       } else {
         //Get.snackbar('Error', 'Failed to refresh chat list');
       }
@@ -90,9 +96,11 @@ class ChatListController extends GetxController {
     final query = searchQuery.value.toLowerCase();
     if (query.isEmpty) return chats;
     return chats
-        .where((chat) =>
-    (chat.user?.name.toLowerCase().contains(query) ?? false) ||
-        (chat.user?.email.toLowerCase().contains(query) ?? false))
+        .where(
+          (chat) =>
+              (chat.user?.name.toLowerCase().contains(query) ?? false) ||
+              (chat.user?.email.toLowerCase().contains(query) ?? false),
+        )
         .toList();
   }
 }

@@ -1,14 +1,12 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../../../routes/app_routes.dart';
 
 class ResetPasswordController extends GetxController {
-
   final TextEditingController passwordTEController = TextEditingController();
-  final TextEditingController confirmPasswordTEController = TextEditingController();
-  final isLoading = false.obs;
+  final TextEditingController confirmPasswordTEController =
+      TextEditingController();
   final RxBool isPasswordVisible = true.obs;
   final RxBool isComPasswordVisible = true.obs;
   String? token;
@@ -20,6 +18,7 @@ class ResetPasswordController extends GetxController {
       token = Get.arguments["token"];
     }
   }
+
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
@@ -27,9 +26,9 @@ class ResetPasswordController extends GetxController {
   void toggleComPasswordVisibility() {
     isComPasswordVisible.value = !isComPasswordVisible.value;
   }
+
   /// reset Passwor
   Future<void> resetPassword() async {
-
     Get.offAllNamed(AppRoute.loginScreen);
     // if (passwordTEController.text != confirmPasswordTEController.text) {
     //   AppSnackBar.error(
@@ -53,7 +52,6 @@ class ResetPasswordController extends GetxController {
     //   final response = await NetworkCaller().postRequest(
     //     AppUrls.resetPassword,
     //     body: requestBody,
-    //     token: accessToken,
     //   );
     //   if (Get.isDialogOpen == true) {
     //     Get.back();
