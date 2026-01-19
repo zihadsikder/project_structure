@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/common/widgets/app_loader.dart';
-import '../../../core/common/widgets/app_snackber.dart';
+import '../../../core/common/widgets/app_toast.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/network_caller.dart';
 import '../../../core/utils/constants/app_urls.dart';
@@ -17,14 +17,15 @@ class LoginController extends GetxController {
   final isPasswordHidden = true.obs;
   final isLoading = false.obs;
 
-  void togglePasswordVisibility() => isPasswordHidden.value = !isPasswordHidden.value;
+  void togglePasswordVisibility() =>
+      isPasswordHidden.value = !isPasswordHidden.value;
 
   Future<void> signIn() async {
     final phone = phoneText.text.trim();
     final password = passwordText.text.trim();
 
     if (phone.isEmpty || password.isEmpty) {
-      AppSnackBar.error('Please enter phone and password');
+      AppToasts.errorToast(message: 'Please enter phone and password');
       return;
     }
 
@@ -45,9 +46,9 @@ class LoginController extends GetxController {
         if (token != null && token.isNotEmpty) {
           await AuthService.saveToken(token);
           Get.offAllNamed(AppRoute.navBar);
-          AppSnackBar.success('Login successful!');
+          AppToasts.successToast(message: 'Login successful!');
         } else {
-          AppSnackBar.error('Access token not found');
+          AppToasts.errorToast(message: 'Access token not found');
         }
       } else {
         String message = response.errorMessage ?? 'Login failed';
@@ -61,10 +62,7 @@ class LoginController extends GetxController {
             if (email != null) {
               Get.offNamed(
                 AppRoute.verifyCodeScreen,
-                arguments: {
-                  'formScreen': AppRoute.loginScreen,
-                  'email': email,
-                },
+                arguments: {'formScreen': AppRoute.loginScreen, 'email': email},
               );
               message = 'Please verify your email first';
             }
@@ -74,12 +72,15 @@ class LoginController extends GetxController {
             break;
         }
 
-        AppSnackBar.error(message);
+        AppToasts.errorToast(message: message);
       }
     } catch (e) {
       log('Login error: $e');
-      AppSnackBar.error(
-        e.toString().contains('Timeout') ? 'Request timed out' : 'Something went wrong',
+      AppToasts.errorToast(
+        message:
+            e.toString().contains('Timeout')
+                ? 'Request timed out'
+                : 'Something went wrong',
       );
     } finally {
       isLoading.value = false;

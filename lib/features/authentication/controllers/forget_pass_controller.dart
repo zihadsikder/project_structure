@@ -1,26 +1,25 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
-import '../../../core/common/widgets/app_snackber.dart';
+import '../../../core/common/widgets/app_toast.dart';
 import '../../../core/services/network_caller.dart';
 import '../../../core/utils/constants/app_urls.dart';
 import '../../../routes/app_routes.dart';
 import '../presentation/screens/verify_code_screen.dart';
 
-
 class ForgetPasswordController extends GetxController {
   final emailText = TextEditingController();
   final isLoading = false.obs;
 
-  bool get isValidEmail => emailText.text.trim().isNotEmpty && GetUtils.isEmail(emailText.text.trim());
+  bool get isValidEmail =>
+      emailText.text.trim().isNotEmpty &&
+      GetUtils.isEmail(emailText.text.trim());
 
   Future<void> forgetPassword() async {
     final email = emailText.text.trim();
 
     if (!isValidEmail) {
-      AppSnackBar.error('Please enter a valid email');
+      AppToasts.errorToast(message: 'Please enter a valid email');
       return;
     }
 
@@ -34,22 +33,20 @@ class ForgetPasswordController extends GetxController {
 
       if (response.isSuccess) {
         Get.to(
-              () => VerifyCodeScreen(),
-          arguments: {
-            'formScreen': AppRoute.emailVerifyScreen,
-            'email': email,
-          },
+          () => VerifyCodeScreen(),
+          arguments: {'formScreen': AppRoute.emailVerifyScreen, 'email': email},
         );
-        AppSnackBar.success('OTP sent to your email');
+        AppToasts.successToast(message: 'OTP sent to your email');
       } else {
-        String msg = response.errorMessage ?? 'Failed to send OTP';
+        String msg = response.errorMessage;
 
-        if (response.statusCode == 404) msg = 'No account found with this email';
+        if (response.statusCode == 404)
+          msg = 'No account found with this email';
 
-        AppSnackBar.error(msg);
+        AppToasts.errorToast(message: msg);
       }
     } catch (e) {
-      AppSnackBar.error('Something went wrong. Please try again');
+      AppToasts.errorToast(message: 'Something went wrong. Please try again');
     } finally {
       isLoading.value = false;
     }

@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 import 'dart:io';
 
@@ -9,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-import '../../../core/common/widgets/app_snackber.dart';
 import '../../../core/common/widgets/app_toast.dart';
 import '../../../core/services/Auth_service.dart';
 import '../../../core/services/network_caller.dart';
@@ -33,26 +31,25 @@ class SocialAuthController extends GetxController {
         sound: true,
       );
       String? token = await FirebaseMessaging.instance.getToken();
-      if(token == null) {
+      if (token == null) {
         throw Exception("FCM Token is null");
       }
       log('<<=================>> FCM Token : $token');
       fcmToken = token;
     } catch (e) {
       log('Error get FCM Token : $e');
-      AppSnackBar.error(
-
-        "Couldn't initialize push notifications",
-      );
+      AppToasts.errorToast(message: "Couldn't initialize push notifications");
     }
   }
+
   /// ------> Social Apple Login without Firebase <-----
   Future<void> appleLogin() async {
     try {
       isSocialLoading.value = true;
 
       if (!Platform.isIOS && !Platform.isMacOS) {
-        AppSnackBar.error( "Apple Sign-In only works on iOS/macOS devices.",
+        AppToasts.errorToast(
+          message: "Apple Sign-In only works on iOS/macOS devices.",
         );
         isSocialLoading.value = false;
         return;
@@ -71,12 +68,14 @@ class SocialAuthController extends GetxController {
         "socialLoginId": credential.userIdentifier ?? "",
         "email": credential.email ?? "",
         "name":
-        "${credential.givenName ?? ''} ${credential.familyName ?? ''}".trim(),
+            "${credential.givenName ?? ''} ${credential.familyName ?? ''}"
+                .trim(),
         "role": "USER",
         "image": "", // Apple doesn’t provide photoURL
         "socialType": "APPLE",
         "fcmToken": fcmToken,
-        "idToken": credential.identityToken, // Optional if backend verifies token
+        "idToken":
+            credential.identityToken, // Optional if backend verifies token
       };
 
       final response = await NetworkCaller().postRequest(
@@ -98,15 +97,16 @@ class SocialAuthController extends GetxController {
           Get.offAllNamed(AppRoute.navBar);
         }
       } else {
-        AppSnackBar.error( response.errorMessage);
+        AppToasts.errorToast(message: response.errorMessage);
       }
     } catch (e) {
       AppLoggerHelper.error("Error during Apple Login: $e");
-      AppSnackBar.error( "$e");
+      AppToasts.errorToast(message: "$e");
     } finally {
       isSocialLoading.value = false;
     }
   }
+
   /// ------> Social Google Login without Firebase <-----
   Future<void> googleLogin() async {
     try {
@@ -120,7 +120,8 @@ class SocialAuthController extends GetxController {
       }
 
       // Get authentication details
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Prepare data for backend API
       final body = {
@@ -131,7 +132,9 @@ class SocialAuthController extends GetxController {
         "image": googleUser.photoUrl ?? "",
         "socialType": "GOOGLE", // GOOGLE | APPLE | FACEBOOK | NONE
         "fcmToken": fcmToken,
-        "idToken": googleAuth.idToken, // optional (useful if backend verifies Google token)
+        "idToken":
+            googleAuth
+                .idToken, // optional (useful if backend verifies Google token)
       };
 
       final response = await NetworkCaller().postRequest(
@@ -153,15 +156,16 @@ class SocialAuthController extends GetxController {
           Get.offAllNamed(AppRoute.navBar);
         }
       } else {
-        AppSnackBar.error( response.errorMessage);
+        AppToasts.errorToast(message: response.errorMessage);
       }
     } catch (e) {
       AppLoggerHelper.error("Error during Google Login (no Firebase): $e");
-      AppSnackBar.error( "$e");
+      AppToasts.errorToast(message: "$e");
     } finally {
       isSocialLoading.value = false;
     }
   }
+
   /// ------> Social Google Login with Firebase <-----
   // final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -232,5 +236,4 @@ class SocialAuthController extends GetxController {
   //     isSocialLoading.value = false;
   //   }
   // }
-
 }

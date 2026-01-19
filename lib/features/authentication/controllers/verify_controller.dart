@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/common/widgets/app_loader.dart';
-import '../../../core/common/widgets/app_snackber.dart';
+import '../../../core/common/widgets/app_toast.dart';
 import '../../../core/services/network_caller.dart';
 import '../../../core/utils/constants/app_urls.dart';
 import '../../../core/utils/logging/logger.dart';
@@ -26,8 +26,10 @@ class OtpController extends GetxController {
   final isButtonEnabled = false.obs; // ← Add this
 
   void updateOtpValue(String value) {
-    isButtonEnabled.value = value.length == 6 && value.contains(RegExp(r'^\d+$'));
+    isButtonEnabled.value =
+        value.length == 6 && value.contains(RegExp(r'^\d+$'));
   }
+
   @override
   void onInit() {
     super.onInit();
@@ -59,7 +61,7 @@ class OtpController extends GetxController {
 
   Future<void> verifyOtp(String otp) async {
     if (otp.length != 6 || !otp.contains(RegExp(r'^\d+$'))) {
-      AppSnackBar.error('Please enter valid 6-digit OTP');
+      AppToasts.errorToast(message: 'Please enter valid 6-digit OTP');
       return;
     }
 
@@ -71,14 +73,22 @@ class OtpController extends GetxController {
 
       late final response;
 
-      if (fromScreen == AppRoute.signUpScreen || fromScreen == AppRoute.loginScreen) {
-        response = await NetworkCaller().postRequest(AppUrls.verifySignUpOtp, body: body);
+      if (fromScreen == AppRoute.signUpScreen ||
+          fromScreen == AppRoute.loginScreen) {
+        response = await NetworkCaller().postRequest(
+          AppUrls.verifySignUpOtp,
+          body: body,
+        );
       } else {
-        response = await NetworkCaller().postRequest(AppUrls.verifyForgetPasswordOtp, body: body);
+        response = await NetworkCaller().postRequest(
+          AppUrls.verifyForgetPasswordOtp,
+          body: body,
+        );
       }
 
       if (response.isSuccess) {
-        if (fromScreen == AppRoute.signUpScreen || fromScreen == AppRoute.loginScreen) {
+        if (fromScreen == AppRoute.signUpScreen ||
+            fromScreen == AppRoute.loginScreen) {
           Future.delayed(const Duration(milliseconds: 800), () {
             if (Get.isDialogOpen == true) Get.back();
             showSignupConfirmationDialog();
@@ -86,7 +96,10 @@ class OtpController extends GetxController {
         } else {
           final accessToken = response.responseData?['data'] as String?;
           if (accessToken != null) {
-            Get.offNamed(AppRoute.resetPasswordScreen, arguments: {"token": accessToken});
+            Get.offNamed(
+              AppRoute.resetPasswordScreen,
+              arguments: {"token": accessToken},
+            );
           }
         }
       } else {
@@ -95,11 +108,11 @@ class OtpController extends GetxController {
         if (response.statusCode == 408) msg = 'OTP expired. Please resend.';
         if (response.statusCode == 404) msg = 'Incorrect OTP';
 
-        AppSnackBar.error(msg);
+        AppToasts.errorToast(message: msg);
       }
     } catch (e) {
       AppLoggerHelper.error('OTP verify error: $e');
-      AppSnackBar.error('Something went wrong');
+      AppToasts.errorToast(message: 'Something went wrong');
     } finally {
       isLoading.value = false;
       if (Get.isDialogOpen == true) Get.back();
@@ -120,17 +133,17 @@ class OtpController extends GetxController {
 
       if (response.isSuccess) {
         _startCountdown();
-        AppSnackBar.success('OTP resent successfully');
+        AppToasts.successToast(message: 'OTP resent successfully');
       } else {
-        String msg = response.errorMessage ?? 'Failed to resend OTP';
+        String msg = response.errorMessage;
 
         if (response.statusCode == 429) msg = 'Too many requests. Try later';
 
-        AppSnackBar.error(msg);
+        AppToasts.errorToast(message: msg);
       }
     } catch (e) {
       AppLoggerHelper.error('Resend OTP error: $e');
-      AppSnackBar.error('Something went wrong');
+      AppToasts.errorToast(message: 'Something went wrong');
     } finally {
       isLoading.value = false;
       if (Get.isDialogOpen == true) Get.back();

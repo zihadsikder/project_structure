@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/services/network_caller.dart';
 import '../../../core/utils/constants/app_urls.dart';
+import '../../core/common/widgets/app_toast.dart';
 
 import '../../core/services/Auth_service.dart';
 import '../../core/utils/constants/app_colors.dart';
@@ -43,7 +44,7 @@ class SubscriptionController extends GetxController {
   Future<void> _initialize() async {
     final available = await _iap.isAvailable();
     if (!available) {
-      Get.snackbar("Error", "In-App Purchase not available");
+      AppToasts.errorToast(message: "In-App Purchase not available");
       isProductLoading.value = false;
       return;
     }
@@ -64,9 +65,9 @@ class SubscriptionController extends GetxController {
     isProductLoading.value = true;
     final response = await _iap.queryProductDetails({monthlyId});
     if (response.error != null) {
-      Get.snackbar("Error", response.error!.message);
+      AppToasts.errorToast(message: response.error!.message);
     } else if (response.productDetails.isEmpty) {
-      Get.snackbar("Error", "Subscription not found on store!");
+      AppToasts.errorToast(message: "Subscription not found on store!");
     } else {
       products.assignAll(response.productDetails);
     }
@@ -74,18 +75,22 @@ class SubscriptionController extends GetxController {
   }
 
   void _listenToPurchaseUpdates() {
-    _purchaseSub = _iap.purchaseStream.listen((purchases) async {
-      for (final purchase in purchases) {
-        await _handlePurchase(purchase);
-      }
-    }, onError: (e) => Get.snackbar("Error", "Purchase stream error: $e"));
+    _purchaseSub = _iap.purchaseStream.listen(
+      (purchases) async {
+        for (final purchase in purchases) {
+          await _handlePurchase(purchase);
+        }
+      },
+      onError:
+          (e) => AppToasts.errorToast(message: "Purchase stream error: $e"),
+    );
   }
 
   // Main purchase function
   Future<void> subscribeMonthly() async {
     final product = monthlyProduct;
     if (product == null) {
-      Get.snackbar("Loading", "Product not ready yet. Try again.");
+      AppToasts.warningToast(message: "Product not ready yet. Try again.");
       return;
     }
 
@@ -98,7 +103,7 @@ class SubscriptionController extends GetxController {
         purchaseParam: purchaseParam,
       ); // Correct for subscriptions
     } catch (e) {
-      Get.snackbar("Error", "Failed to start purchase: $e");
+      AppToasts.errorToast(message: "Failed to start purchase: $e");
       isLoading.value = false;
     }
   }
@@ -114,7 +119,9 @@ class SubscriptionController extends GetxController {
 
       case PurchaseStatus.error:
         isLoading.value = false;
-        Get.snackbar("Failed", purchase.error?.message ?? "Purchase failed");
+        AppToasts.errorToast(
+          message: purchase.error?.message ?? "Purchase failed",
+        );
         break;
 
       case PurchaseStatus.purchased:
@@ -123,11 +130,7 @@ class SubscriptionController extends GetxController {
         if (valid) {
           isSubscribed.value = true;
           await _saveSubscriptionStatus(true);
-          Get.snackbar(
-            "Success",
-            "Subscription activated!",
-            backgroundColor: AppColors.primary,
-          );
+          AppToasts.successToast(message: "Subscription activated!");
           if (Get.isOverlaysOpen) Get.back();
         }
         isLoading.value = false;
@@ -135,7 +138,7 @@ class SubscriptionController extends GetxController {
 
       case PurchaseStatus.canceled:
         isLoading.value = false;
-        Get.snackbar("Cancelled", "Purchase was cancelled");
+        AppToasts.infoToast(message: "Purchase was cancelled");
         break;
     }
 
@@ -151,7 +154,7 @@ class SubscriptionController extends GetxController {
     try {
       final token = AuthService.token;
       if (token == null) {
-        Get.snackbar("Error", "Login required");
+        AppToasts.errorToast(message: "Login required");
         return false;
       }
 
@@ -177,9 +180,8 @@ class SubscriptionController extends GetxController {
         }
 
         if (receiptData == null || receiptData.isEmpty) {
-          Get.snackbar(
-            "Warning",
-            "Receipt not ready. Using local mode (testing)",
+          AppToasts.warningToast(
+            message: "Receipt not ready. Using local mode (testing)",
           );
           return true; // Allow in test mode
         }
@@ -218,7 +220,7 @@ class SubscriptionController extends GetxController {
         }
       }
 
-      Get.snackbar("Server Error", "Subscription not activated on server");
+      AppToasts.errorToast(message: "Subscription not activated on server");
       return false;
     } catch (e) {
       if (kDebugMode) {
