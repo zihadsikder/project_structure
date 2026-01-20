@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:gat/core/utils/constants/app_sizer.dart';
+import '../../utils/constants/app_sizer.dart';
 
 import '../../utils/constants/app_colors.dart';
 

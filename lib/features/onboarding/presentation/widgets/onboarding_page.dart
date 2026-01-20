@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gat/core/utils/constants/app_sizer.dart';
+import '../../../../core/utils/constants/app_sizer.dart';
 import 'package:get/get.dart';
 import '../../../../../core/common/widgets/custom_button.dart';
 import '../../../../../core/common/widgets/custom_text.dart';

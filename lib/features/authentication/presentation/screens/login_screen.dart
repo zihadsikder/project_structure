@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:gap/gap.dart';
-import 'package:gat/core/utils/constants/app_sizer.dart';
+
 
 
 import '../../../../core/common/widgets/custom_button.dart';
@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import '../../../../core/common/widgets/custom_text_field.dart';
 import '../../../../core/localization/app_texts.dart';
 import '../../../../core/utils/constants/app_colors.dart';
+import '../../../../core/utils/constants/app_sizer.dart';
 import '../../../../core/utils/constants/icon_path.dart';
 import '../../../../core/utils/constants/logo_path.dart';
 import '../../../../routes/app_routes.dart';

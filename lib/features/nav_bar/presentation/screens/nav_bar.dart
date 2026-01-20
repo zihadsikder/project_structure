@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gat/core/utils/constants/app_sizer.dart';
+import '../../../../core/utils/constants/app_sizer.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 

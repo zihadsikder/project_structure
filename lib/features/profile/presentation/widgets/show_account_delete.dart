@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gat/core/common/widgets/custom_button.dart';
-import 'package:gat/core/utils/constants/app_sizer.dart';
+import '../../../../core/utils/constants/app_sizer.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/common/widgets/custom_text.dart';

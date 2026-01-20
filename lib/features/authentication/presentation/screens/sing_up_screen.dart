@@ -1,6 +1,5 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:gat/core/utils/constants/app_sizer.dart';
 
 
 
@@ -9,6 +8,7 @@ import '../../../../core/common/widgets/custom_button.dart';
 import '../../../../core/common/widgets/custom_text.dart';
 import '../../../../core/common/widgets/custom_text_field.dart';
 import '../../../../core/utils/constants/app_colors.dart';
+import '../../../../core/utils/constants/app_sizer.dart';
 import '../../../../core/utils/constants/icon_path.dart';
 import '../../../../core/utils/constants/logo_path.dart';
 import 'package:get/get.dart';
@@ -27,7 +27,7 @@ class SignUpScreen extends StatelessWidget {
         body: SafeArea(
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 26),
+                padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 26.h),
                 child: Form(
                   key: _formKey,
                   child:  Column(

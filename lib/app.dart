@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:gat/routes/app_routes.dart';
 import 'package:get/get.dart';
 import 'core/bindings/controller_binder.dart';
-import 'core/utils/constants/app_sizer.dart';
-import 'core/utils/constants/app_sizes.dart';
+import '../../../../core/utils/constants/app_sizer.dart';
+
 import 'core/utils/theme/theme.dart';
 
 
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     /// Initialize LanguageController
     //final languageController = Get.put(LanguageController());
-    AppSizes().init(context);
+
     return Sizer(
       builder: (context, orientation, deviceType) {
         return GetMaterialApp(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gat/core/utils/constants/app_sizer.dart';
+import '../../../../core/utils/constants/app_sizer.dart';
 
 import '../../../../core/common/widgets/custom_text.dart';
 

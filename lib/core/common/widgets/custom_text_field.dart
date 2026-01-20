@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gat/core/utils/constants/app_sizer.dart';
+import '../../utils/constants/app_sizer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../utils/constants/app_colors.dart';
-import '../../utils/constants/app_sizes.dart';
+
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
@@ -76,7 +76,7 @@ class CustomTextField extends StatelessWidget {
         keyboardType: keyboardType,
         inputFormatters: inputFormatters,
         style: GoogleFonts.inter(
-          fontSize: getWidth(14),
+          fontSize: 14.sp,
           fontWeight: FontWeight.w400,
           color: Colors.black,
         ),
@@ -89,7 +89,7 @@ class CustomTextField extends StatelessWidget {
           suffixStyle:
           suffixTextStyle ??
               GoogleFonts.inter(
-                fontSize: getWidth(14), // Default size for the suffix text
+                fontSize: 14.sp, // Default size for the suffix text
                 fontWeight: FontWeight.w400,
                 color:
                 AppColors
@@ -97,9 +97,9 @@ class CustomTextField extends StatelessWidget {
               ),
           hintText: hintText,
           hintStyle: GoogleFonts.poppins(
-            fontSize: getWidth(
-              hintTextSize ?? 14,
-            ), // Use dynamic size, default to 15
+            fontSize:
+              hintTextSize ?? 14.sp,
+             // Use dynamic size, default to 15
             fontWeight: FontWeight.w400,
             color: hintTextColor ?? AppColors.backgroundDark, // Use dynamic color, default to textSecondary
           ),

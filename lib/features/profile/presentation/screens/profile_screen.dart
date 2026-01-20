@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:gat/core/utils/constants/app_sizer.dart';
+import '../../../../core/utils/constants/app_sizer.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 

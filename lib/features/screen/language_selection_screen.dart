@@ -6,7 +6,7 @@ import 'package:gap/gap.dart';
 import '../../../core/common/widgets/custom_button.dart';
 import '../../../core/common/widgets/custom_text.dart';
 import '../../../core/utils/constants/app_colors.dart';
-import '../../../core/utils/constants/app_sizer.dart';
+import '../../../../core/utils/constants/app_sizer.dart';
 import '../../../core/localization/reusable_language_tile.dart';
 import '../../../core/localization/language_controller.dart';
 
