@@ -6,24 +6,27 @@ const double kFigmaDesignStatusBar = 0;
 
 enum DeviceType { mobile, tablet, desktop }
 
-typedef ResponsiveBuild = Widget Function(
+typedef ResponsiveBuild =
+Widget Function(
     BuildContext context,
     Orientation orientation,
     DeviceType deviceType,
     );
 
-
 extension ResponsiveExtension on num {
   double get w => (this * SizeUtils.width) / kFigmaDesignWidth;
   double get h => (this * SizeUtils.height) / kFigmaDesignHeight;
   double get sp => (this * SizeUtils.width) / kFigmaDesignWidth;
+  double get r =>
+      (this * SizeUtils.width) / kFigmaDesignWidth; // Radius based on width
 }
 
-
 extension FormatExtension on double {
-  double toFixed(int fractionDigits) => double.parse(toStringAsFixed(fractionDigits));
+  double toFixed(int fractionDigits) =>
+      double.parse(toStringAsFixed(fractionDigits));
   double nonZero({double defaultValue = 0.0}) => this > 0 ? this : defaultValue;
-  String toFormattedString({int fractionDigits = 2}) => toStringAsFixed(fractionDigits);
+  String toFormattedString({int fractionDigits = 2}) =>
+      toStringAsFixed(fractionDigits);
 }
 
 class Sizer extends StatelessWidget {
@@ -37,11 +40,7 @@ class Sizer extends StatelessWidget {
         return OrientationBuilder(
           builder: (context, orientation) {
             SizeUtils.setScreenSize(constraints, orientation, context);
-            return builder(
-              context,
-              orientation,
-              SizeUtils.deviceType,
-            );
+            return builder(context, orientation, SizeUtils.deviceType);
           },
         );
       },
@@ -90,6 +89,7 @@ class SizeUtils {
     debugPrint("Device Type: $deviceType");
     debugPrint("Orientation: $orientation");
   }
+
   static double adaptivePadding({
     required double mobile,
     required double tablet,
@@ -104,6 +104,7 @@ class SizeUtils {
         return mobile;
     }
   }
+
   static bool get isPortrait => orientation == Orientation.portrait;
   static bool get isLandscape => orientation == Orientation.landscape;
 }
