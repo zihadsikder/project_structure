@@ -1,13 +1,19 @@
+import 'dart:developer';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/logging/logger.dart';
 
 class AuthService {
   static const String _tokenKey = 'token';
   static const String _roleKey = 'UserRole';
+  static const String _guestModeKey = 'isGuestMode';
+  static const String _uidKey = "userID";
 
   static late SharedPreferences _preferences;
   static String? _token;
   static String? _userRole;
+  static String? _uid;
+  static bool _isGuestMode = false;
 
   /// Initialize SharedPreferences (call this during app startup)
   static Future<void> init() async {
@@ -28,6 +34,40 @@ class AuthService {
     return _token != null && _token!.isNotEmpty;
   }
 
+  /// Guest mode methods
+  static bool get isGuestMode => _isGuestMode;
+
+  static Future<void> setGuestMode(bool value) async {
+    try {
+      if (_preferences == null) await init();
+      await _preferences!.setBool(_guestModeKey, value);
+      _isGuestMode = value;
+      log('Guest mode set to: $value');
+    } catch (e) {
+      log('Error setting guest mode: $e');
+    }
+  }
+  static Future<void> saveUID(String uid) async {
+    try {
+      if (_preferences == null) await init();
+      await _preferences!.setString(_uidKey, uid);
+      _uid = uid;
+      log("Saved UID: $uid");
+    } catch (e) {
+      log('Error saving UID: $e', level: 1000, error: e);
+    }
+  }
+
+
+  static Future<void> clearGuestMode() async {
+    try {
+      if (_preferences == null) await init();
+      await _preferences!.remove(_guestModeKey);
+      _isGuestMode = false;
+    } catch (e) {
+      log('Error clearing guest mode: $e');
+    }
+  }
   /// Save the token to local storage
   static Future<void> saveToken(String token) async {
     try {

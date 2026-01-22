@@ -13,7 +13,20 @@ class AppValidator {
 
     return null;
   }
-
+  static String? validateName(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Full name is required.';
+    }
+    final trimmedValue = value.trim();
+    if (trimmedValue.length < 2) {
+      return 'Name must be at least 2 characters.';
+    }
+    // Allow letters, spaces, hyphens, and apostrophes (for names like O'Connor, Mary-Jane)
+    if (!RegExp(r"^[a-zA-Z\s\-']+$").hasMatch(trimmedValue)) {
+      return 'Name should only contain letters.';
+    }
+    return null;
+  }
   static String? validatePassword(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Password is required.';

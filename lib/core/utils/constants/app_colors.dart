@@ -20,7 +20,11 @@ class AppColors {
   // );
 
 
-  // Added by Shahriar
+  // Cream White - warm off-white for backgrounds
+  static const Color cream = Color(0xFFFBF9F6);
+  static const Color henna = Color(0xFF381315);
+  static const Color jasmine = Color(0xFFE5E9BE);
+
   static const Color textPrimary = Color(0xFF111111);
   static const Color textSecondary = Color(0xFF747474);
   static const Color textBold = Color(0xff091824);
@@ -33,6 +37,7 @@ class AppColors {
   static const Color scaffoldColor = Color(0xFFe7e7e7);
 
 
+  static const Color authTextSecondary = Color(0xFFB8B8B8);
 
   // Background Colors
   static const Color backgroundLight = Color(0xFFF9FAFB);
@@ -61,4 +66,5 @@ class AppColors {
 
   /// Buttons
   static const Color buttonSecondary = Color(0xFFD8D8D8);
+  static const Color authButtonPrimary = henna;
 }
