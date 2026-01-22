@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:gap/gap.dart';
 
@@ -109,13 +110,8 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 32.h),
-                      CustomButton(
 
-                          text: 'Login',
-                          onTap: () {
-                            controller.signIn();
-                          }),
-                      // Sign In Button
+                      /// Sign In Button
                       Obx(
                             () => AuthPrimaryButton(
                           text: AppText.signIn,
@@ -130,67 +126,67 @@ class LoginScreen extends StatelessWidget {
                       ),
 
                       SizedBox(height: 32.h),
-                      // Or Divider
+                      /// Or Divider
                       const AuthDivider(animationIndex: 4),
                       SizedBox(height: 32.h),
-                      Platform.isAndroid
-                          ? Obx(
-                            () =>
-                            socialAuthController.isSocialLoading.value
-                            ? Center(
-                          child: CircularProgressIndicator(
-                            color: AppColors.primary,
-                          ),
-                        )
-                            : CustomButton(
-                          text: 'Continue with Google',
-                          textColor: AppColors.textPrimary,
-                          isOutline: true,
-                              backgroundColor: Colors.transparent,
-                          onTap: () {
-                            /// Implement Google login functionality
-                            socialAuthController.googleLogin();
-                          },
-                          prefixIcon: Image.asset(LogoPath.googleLogoPng),
-                        ),
-                      )
-                          : SizedBox.shrink(),
-                      Gap(6.h),
+                      // Platform.isAndroid
+                      //     ? Obx(
+                      //       () =>
+                      //       socialAuthController.isSocialLoading.value
+                      //       ? Center(
+                      //     child: CircularProgressIndicator(
+                      //       color: AppColors.primary,
+                      //     ),
+                      //   )
+                      //       : CustomButton(
+                      //     text: 'Continue with Google',
+                      //     textColor: AppColors.textPrimary,
+                      //     isOutline: true,
+                      //         backgroundColor: Colors.transparent,
+                      //     onTap: () {
+                      //       /// Implement Google login functionality
+                      //       socialAuthController.googleLogin();
+                      //     },
+                      //     prefixIcon: Image.asset(LogoPath.googleLogoPng),
+                      //   ),
+                      // )
+                      //     : SizedBox.shrink(),
+                      // Gap(6.h),
+                      //
+                      // Platform.isIOS
+                      //     ? Obx(
+                      //       () =>
+                      //       socialAuthController.isSocialLoading.value
+                      //       ? Center(
+                      //     child: CircularProgressIndicator(
+                      //       color: AppColors.primary,
+                      //     ),
+                      //   )
+                      //       : CustomButton(
+                      //
+                      //     text: 'Continue with Apple',
+                      //     textColor: AppColors.textPrimary,
+                      //     isOutline: true,
+                      //     backgroundColor: Colors.transparent,
+                      //     onTap: () {
+                      //       /// Implement Google login functionality
+                      //       socialAuthController.appleLogin();
+                      //     },
+                      //     prefixIcon: Image.asset(LogoPath.appleLogo,height: 24,),
+                      //   ),
+                      // )  : SizedBox.shrink(),
+                      /// Google Sign In
+                      // Obx(
+                      //       () => AuthSocialButton(
+                      //     text: 'Continue with Google',
+                      //     iconPath: LogoPath.googleLogoPng,
+                      //     isLoading: socialAuthController.isSocialLoading.value,
+                      //     onPressed: () => socialAuthController.googleLogin(),
+                      //     animationIndex: 5,
+                      //   ),
+                      // ),
 
-                      Platform.isIOS
-                          ? Obx(
-                            () =>
-                            socialAuthController.isSocialLoading.value
-                            ? Center(
-                          child: CircularProgressIndicator(
-                            color: AppColors.primary,
-                          ),
-                        )
-                            : CustomButton(
-
-                          text: 'Continue with Apple',
-                          textColor: AppColors.textPrimary,
-                          isOutline: true,
-                          backgroundColor: Colors.transparent,
-                          onTap: () {
-                            /// Implement Google login functionality
-                            socialAuthController.appleLogin();
-                          },
-                          prefixIcon: Image.asset(LogoPath.appleLogo,height: 24,),
-                        ),
-                      )  : SizedBox.shrink(),
-                      // Google Sign In
-                      Obx(
-                            () => AuthSocialButton(
-                          text: 'Continue with Google',
-                          iconPath: LogoPath.googleLogoPng,
-                          isLoading: socialAuthController.isSocialLoading.value,
-                          onPressed: () => socialAuthController.googleLogin(),
-                          animationIndex: 5,
-                        ),
-                      ),
-
-                      // Apple Sign In (iOS only)
+                      /// Apple Sign In (iOS only)
                       if (Platform.isIOS) ...[
                         const SizedBox(height: 12),
                         Obx(
@@ -203,7 +199,10 @@ class LoginScreen extends StatelessWidget {
                           ),
                         ),
                       ],
+                      const SizedBox(height: 20),
 
+                      /// Continue as Guest
+                      _buildGuestButton(socialAuthController),
                       SizedBox(height: 18.h),
 
                       Align(
@@ -221,6 +220,48 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
             ))
+    );
+  }
+  Widget _buildGuestButton(SocialAuthController socialController) {
+    return Center(
+      child: Obx(
+            () => GestureDetector(
+          onTap: socialController.isGuestLoading.value
+              ? null
+              : () {
+            HapticFeedback.lightImpact();
+            socialController.continueAsGuest();
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: AppColors.authTextSecondary.withValues(alpha: 0.3),
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: socialController.isGuestLoading.value
+                ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor:
+                AlwaysStoppedAnimation<Color>(AppColors.authTextSecondary),
+              ),
+            )
+                : Text(
+              'Continue As Guest',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.authTextSecondary.withValues(alpha: 0.8),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -29,24 +29,24 @@ class SocialAuthController extends GetxController {
   final isSocialLoading = false.obs;
   final isAppleLoading = false.obs;
   /// Get FCM Token Form Firebase
-  Future<void> initializeFCMToken() async {
-    try {
-      await FirebaseMessaging.instance.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
-      String? token = await FirebaseMessaging.instance.getToken();
-      if (token == null) {
-        throw Exception("FCM Token is null");
-      }
-      log('<<=================>> FCM Token : $token');
-      fcmToken = token;
-    } catch (e) {
-      log('Error get FCM Token : $e');
-      AppToasts.errorToast(message: "Couldn't initialize push notifications");
-    }
-  }
+  // Future<void> initializeFCMToken() async {
+  //   try {
+  //     await FirebaseMessaging.instance.requestPermission(
+  //       alert: true,
+  //       badge: true,
+  //       sound: true,
+  //     );
+  //     String? token = await FirebaseMessaging.instance.getToken();
+  //     if (token == null) {
+  //       throw Exception("FCM Token is null");
+  //     }
+  //     log('<<=================>> FCM Token : $token');
+  //     fcmToken = token;
+  //   } catch (e) {
+  //     log('Error get FCM Token : $e');
+  //     AppToasts.errorToast(message: "Couldn't initialize push notifications");
+  //   }
+  // }
 
   /// sign in apple function
   Future<void> appleLogin() async {
@@ -330,135 +330,135 @@ class SocialAuthController extends GetxController {
   }
 
   /// ------> Social Google Login with Firebase <-----
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  //final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> googleLogin() async {
-    try {
-      isSocialLoading.value = true;
-
-      // If the previous Google sign-in attempt selected an account (even if backend rejected it),
-      // GoogleSignIn may silently reuse it. Clear cached session so user can pick another account.
-      try {
-        if (_googleSignIn.currentUser != null) {
-          await _googleSignIn.disconnect();
-          await _googleSignIn.signOut();
-        }
-      } catch (_) {
-        // Ignore sign-out failures; we still want to attempt sign-in.
-      }
-      try {
-        await _auth.signOut();
-      } catch (_) {}
-
-      // Google Sign-In
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        isSocialLoading.value = false;
-        return;
-      }
-
-      final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
-
-      // Firebase Credential
-      final credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-        accessToken: googleAuth.accessToken,
-      );
-
-      final userCredential = await _auth.signInWithCredential(credential);
-      final user = userCredential.user;
-
-      if (user == null) {
-        throw Exception("Firebase returned no user");
-      }
-
-      // Load onboarding data from SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      final onboardingName = prefs.getString('onboarding_name')?.trim();
-      final referralSource = prefs.getString('referral_source')?.trim();
-      // Read userGoal as List (backend expects array)
-      final userGoals = prefs.getStringList('user_goal') ?? [];
-
-      // Prepare body for backend
-      final body = {
-        "socialLoginId": user.uid,
-        "email": user.email,
-        "name": onboardingName ?? user.displayName,
-        "role": "USER",
-        "image": user.photoURL ?? '',
-        "socialType": "GOOGLE", //  "GOOGLE" | "FACEBOOK" | "APPLE" | "NONE";
-        "fcmToken": fcmToken,
-        "referralSource": referralSource,
-        "userGoal": userGoals, // Send as array
-      };
-
-      final response = await NetworkCaller().postRequest(
-        AppUrls.socialAuth,
-        body: body,
-      );
-
-      if (response.isSuccess) {
-        String? token = response.responseData['data']['accessToken'];
-        String userID = response.responseData['data']['id'] ?? "";
-
-        if (token != null && token.isNotEmpty) {
-          await AuthService.saveToken(token);
-          await AuthService.saveUID(userID);
-
-          // Clear onboarding data from SharedPreferences after successful Google login
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.remove('onboarding_name');
-          await prefs.remove('referral_source');
-          await prefs.remove('user_goal');
-
-          // // Trigger WebSocket connection
-          // if (Get.isRegistered<WebSocketClient>()) {
-          //   Get.find<WebSocketClient>().connect(AppUrls.socketUrl);
-          // }
-          // // Start real-time services (SSE, WebSocket, offline queue)
-          // if (Get.isRegistered<RealTimeService>()) {
-          //   Get.find<RealTimeService>().connectAll();
-          // }
-          AppToasts.successToast(
-            message: response.responseData['message'],
-            toastGravity: ToastGravity.CENTER,
-          );
-          Get.offAllNamed(AppRoute.navBar);
-        }
-      } else {
-        if (response.statusCode == 409 &&
-            (response.errorMessage.toLowerCase().contains(
-              'different sign-in method',
-            ) ||
-                response.errorMessage.toLowerCase().contains(
-                  'already in use',
-                ))) {
-          // Clear the cached Google account so the next tap shows account picker.
-          try {
-            await _googleSignIn.disconnect();
-          } catch (_) {}
-          try {
-            await _googleSignIn.signOut();
-          } catch (_) {}
-          try {
-            await _auth.signOut();
-          } catch (_) {}
-
-          final email = (user.email ?? googleUser.email).trim();
-          await _showGoogleConflictDialog(email: email);
-          return;
-        }
-        AppSnackBar.error( response.errorMessage);
-      }
-    } catch (e) {
-      isSocialLoading.value = false;
-      AppLoggerHelper.error('Error during Google Login : $e');
-
-    } finally {
-      isSocialLoading.value = false;
-    }
-  }
+  // Future<void> googleLogin() async {
+  //   try {
+  //     isSocialLoading.value = true;
+  //
+  //     // If the previous Google sign-in attempt selected an account (even if backend rejected it),
+  //     // GoogleSignIn may silently reuse it. Clear cached session so user can pick another account.
+  //     try {
+  //       if (_googleSignIn.currentUser != null) {
+  //         await _googleSignIn.disconnect();
+  //         await _googleSignIn.signOut();
+  //       }
+  //     } catch (_) {
+  //       // Ignore sign-out failures; we still want to attempt sign-in.
+  //     }
+  //     try {
+  //       await _auth.signOut();
+  //     } catch (_) {}
+  //
+  //     // Google Sign-In
+  //     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+  //     if (googleUser == null) {
+  //       isSocialLoading.value = false;
+  //       return;
+  //     }
+  //
+  //     final GoogleSignInAuthentication googleAuth =
+  //     await googleUser.authentication;
+  //
+  //     // Firebase Credential
+  //     final credential = GoogleAuthProvider.credential(
+  //       idToken: googleAuth.idToken,
+  //       accessToken: googleAuth.accessToken,
+  //     );
+  //
+  //     final userCredential = await _auth.signInWithCredential(credential);
+  //     final user = userCredential.user;
+  //
+  //     if (user == null) {
+  //       throw Exception("Firebase returned no user");
+  //     }
+  //
+  //     // Load onboarding data from SharedPreferences
+  //     final prefs = await SharedPreferences.getInstance();
+  //     final onboardingName = prefs.getString('onboarding_name')?.trim();
+  //     final referralSource = prefs.getString('referral_source')?.trim();
+  //     // Read userGoal as List (backend expects array)
+  //     final userGoals = prefs.getStringList('user_goal') ?? [];
+  //
+  //     // Prepare body for backend
+  //     final body = {
+  //       "socialLoginId": user.uid,
+  //       "email": user.email,
+  //       "name": onboardingName ?? user.displayName,
+  //       "role": "USER",
+  //       "image": user.photoURL ?? '',
+  //       "socialType": "GOOGLE", //  "GOOGLE" | "FACEBOOK" | "APPLE" | "NONE";
+  //       "fcmToken": fcmToken,
+  //       "referralSource": referralSource,
+  //       "userGoal": userGoals, // Send as array
+  //     };
+  //
+  //     final response = await NetworkCaller().postRequest(
+  //       AppUrls.socialAuth,
+  //       body: body,
+  //     );
+  //
+  //     if (response.isSuccess) {
+  //       String? token = response.responseData['data']['accessToken'];
+  //       String userID = response.responseData['data']['id'] ?? "";
+  //
+  //       if (token != null && token.isNotEmpty) {
+  //         await AuthService.saveToken(token);
+  //         await AuthService.saveUID(userID);
+  //
+  //         // Clear onboarding data from SharedPreferences after successful Google login
+  //         final prefs = await SharedPreferences.getInstance();
+  //         await prefs.remove('onboarding_name');
+  //         await prefs.remove('referral_source');
+  //         await prefs.remove('user_goal');
+  //
+  //         // // Trigger WebSocket connection
+  //         // if (Get.isRegistered<WebSocketClient>()) {
+  //         //   Get.find<WebSocketClient>().connect(AppUrls.socketUrl);
+  //         // }
+  //         // // Start real-time services (SSE, WebSocket, offline queue)
+  //         // if (Get.isRegistered<RealTimeService>()) {
+  //         //   Get.find<RealTimeService>().connectAll();
+  //         // }
+  //         AppToasts.successToast(
+  //           message: response.responseData['message'],
+  //           toastGravity: ToastGravity.CENTER,
+  //         );
+  //         Get.offAllNamed(AppRoute.navBar);
+  //       }
+  //     } else {
+  //       if (response.statusCode == 409 &&
+  //           (response.errorMessage.toLowerCase().contains(
+  //             'different sign-in method',
+  //           ) ||
+  //               response.errorMessage.toLowerCase().contains(
+  //                 'already in use',
+  //               ))) {
+  //         // Clear the cached Google account so the next tap shows account picker.
+  //         try {
+  //           await _googleSignIn.disconnect();
+  //         } catch (_) {}
+  //         try {
+  //           await _googleSignIn.signOut();
+  //         } catch (_) {}
+  //         try {
+  //           await _auth.signOut();
+  //         } catch (_) {}
+  //
+  //         final email = (user.email ?? googleUser.email).trim();
+  //         await _showGoogleConflictDialog(email: email);
+  //         return;
+  //       }
+  //       AppSnackBar.error( response.errorMessage);
+  //     }
+  //   } catch (e) {
+  //     isSocialLoading.value = false;
+  //     AppLoggerHelper.error('Error during Google Login : $e');
+  //
+  //   } finally {
+  //     isSocialLoading.value = false;
+  //   }
+  // }
 
   Future<void> _showGoogleConflictDialog({required String email}) async {
     await Get.dialog(
@@ -483,7 +483,7 @@ class SocialAuthController extends GetxController {
             onPressed: () async {
               Get.back();
               // Next attempt will show account chooser because we disconnect/signOut above.
-              await googleLogin();
+              //await googleLogin();
             },
             child: const Text("Try another Google"),
           ),
