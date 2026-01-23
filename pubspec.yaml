@@ -65,6 +65,11 @@ flutter:
     - assets/icons/
     - assets/logos/
     - assets/will_be_delete/
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-SemiBold.ttf
+          weight: 600
 
 
 

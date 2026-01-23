@@ -88,7 +88,7 @@ class CustomTextField extends StatelessWidget {
           suffixText: suffixText, // Dynamic suffixText
           suffixStyle:
           suffixTextStyle ??
-              GoogleFonts.inter(
+              TextStyle(
                 fontSize: 14.sp, // Default size for the suffix text
                 fontWeight: FontWeight.w400,
                 color:
@@ -96,7 +96,7 @@ class CustomTextField extends StatelessWidget {
                     .textSecondary, // Default color for the suffix text
               ),
           hintText: hintText,
-          hintStyle: GoogleFonts.poppins(
+          hintStyle: TextStyle(
             fontSize:
               hintTextSize ?? 14.sp,
              // Use dynamic size, default to 15

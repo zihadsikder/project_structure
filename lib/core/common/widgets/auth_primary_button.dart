@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 
 import '../../utils/constants/app_colors.dart';
 
@@ -236,7 +236,7 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
                                 )
                                 : Text(
                                   widget.text,
-                                  style: GoogleFonts.montserrat(
+                                  style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.primary,

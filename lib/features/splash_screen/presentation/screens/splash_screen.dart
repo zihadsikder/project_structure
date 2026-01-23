@@ -41,8 +41,8 @@ class SplashScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: Center(
-                          child: SvgPicture.asset(
-                            LogoPath.appleLogo,
+                          child: Image.asset(
+                            LogoPath.splashLogo,
                             width: 36.w,
                             height: 36.h,
                             color: AppColors.white,

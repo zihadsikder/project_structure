@@ -86,7 +86,7 @@ class ChatWithoutFunc extends StatelessWidget {
                         fontSize: 14.sp,
                         height: 25 / 19,
                         //letterSpacing: -0.6,
-                        fontFamily: 'Poppins',
+
                       ),
                       border: InputBorder.none,
                       // Remove the default border

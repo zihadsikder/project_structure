@@ -37,7 +37,7 @@ class CustomButton extends StatelessWidget {
     this.borderColor,
     this.customTextStyle,
     this.width,
-    this.height,
+    this.height = 48,
     this.isUpperCase = true,
     this.elevation,
     this.enableShadow = false,
@@ -97,7 +97,7 @@ class CustomButton extends StatelessWidget {
                     isUpperCase ? text.toUpperCase() : text,
                     textAlign: TextAlign.center,
                     style: customTextStyle ??
-                        GoogleFonts.montserrat(
+                        TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: effectiveTextColor,

@@ -84,7 +84,7 @@ class LoginScreen extends StatelessWidget {
                         IconPath.lock,
                         color: AppColors.textFormFieldBorder,
                       ),
-                      hintText: AppText.enterYourPassword.tr,
+                      hintText: 'Enter Your Password',
                       controller: controller.passwordText,
                       obscureText: controller.isPasswordHidden.value,
                       suffixIcon: GestureDetector(
@@ -139,57 +139,6 @@ class LoginScreen extends StatelessWidget {
                   /// Or Divider
                   const AuthDivider(animationIndex: 4),
                   SizedBox(height: 32.h),
-                  Platform.isAndroid
-                      ? Obx(
-                        () =>
-                            socialAuthController.isSocialLoading.value
-                                ? Center(
-                                  child: CircularProgressIndicator(
-                                    color: AppColors.primary,
-                                  ),
-                                )
-                                : CustomButton(
-                                  text: 'Continue with Google',
-                                  textColor: AppColors.textPrimary,
-                                  isOutline: true,
-                                  backgroundColor: Colors.transparent,
-                                  onTap: () {
-                                    /// Implement Google login functionality
-                                    socialAuthController.googleLogin();
-                                  },
-                                  prefixIcon: Image.asset(
-                                    LogoPath.googleLogoPng,
-                                  ),
-                                ),
-                      )
-                      : SizedBox.shrink(),
-                  Gap(6.h),
-
-                  Platform.isIOS
-                      ? Obx(
-                        () =>
-                            socialAuthController.isSocialLoading.value
-                                ? Center(
-                                  child: CircularProgressIndicator(
-                                    color: AppColors.primary,
-                                  ),
-                                )
-                                : CustomButton(
-                                  text: 'Continue with Apple',
-                                  textColor: AppColors.textPrimary,
-                                  isOutline: true,
-                                  backgroundColor: Colors.transparent,
-                                  onTap: () {
-                                    /// Implement Google login functionality
-                                    socialAuthController.appleLogin();
-                                  },
-                                  prefixIcon: Image.asset(
-                                    LogoPath.appleLogo,
-                                    height: 24,
-                                  ),
-                                ),
-                      )
-                      : SizedBox.shrink(),
 
                   /// Google Sign In
                   // Obx(
