@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 import '../../utils/constants/app_colors.dart';
 
 /// A primary button for authentication screens with enhanced animations.
@@ -52,10 +51,7 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
       vsync: this,
     );
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.96).animate(
-      CurvedAnimation(
-        parent: _pressController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _pressController, curve: Curves.easeInOut),
     );
 
     // Fade-in animation
@@ -64,10 +60,7 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
       vsync: this,
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _fadeController,
-        curve: Curves.easeOutCubic,
-      ),
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeOutCubic),
     );
 
     // Slide-up animation
@@ -75,10 +68,7 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
       begin: const Offset(0, 0.5),
       end: Offset.zero,
     ).animate(
-      CurvedAnimation(
-        parent: _fadeController,
-        curve: Curves.easeOutBack,
-      ),
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeOutBack),
     );
 
     // Shimmer effect animation
@@ -87,10 +77,7 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
       vsync: this,
     )..repeat();
     _shimmerAnimation = Tween<double>(begin: -1.0, end: 2.0).animate(
-      CurvedAnimation(
-        parent: _shimmerController,
-        curve: Curves.easeInOutSine,
-      ),
+      CurvedAnimation(parent: _shimmerController, curve: Curves.easeInOutSine),
     );
 
     // Delay based on animation index for staggered effect
@@ -146,15 +133,22 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
                     gradient: LinearGradient(
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
-                      colors: widget.onPressed != null
-                          ? [
-                        AppColors.authButtonPrimary,
-                        AppColors.authButtonPrimary.withValues(alpha: 0.95),
-                      ]
-                          : [
-                        AppColors.authButtonPrimary.withValues(alpha: 0.5),
-                        AppColors.authButtonPrimary.withValues(alpha: 0.5),
-                      ],
+                      colors:
+                          widget.onPressed != null
+                              ? [
+                                AppColors.authButtonPrimary,
+                                AppColors.authButtonPrimary.withValues(
+                                  alpha: 0.95,
+                                ),
+                              ]
+                              : [
+                                AppColors.authButtonPrimary.withValues(
+                                  alpha: 0.5,
+                                ),
+                                AppColors.authButtonPrimary.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ],
                     ),
                     borderRadius: BorderRadius.circular(28),
                     // Blurry border effect using multiple box shadows
@@ -179,9 +173,14 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
                       ),
                       // Standard shadow for depth
                       BoxShadow(
-                        color: widget.onPressed != null
-                            ? AppColors.authButtonPrimary.withValues(alpha: 0.4)
-                            : AppColors.authButtonPrimary.withValues(alpha: 0.2),
+                        color:
+                            widget.onPressed != null
+                                ? AppColors.authButtonPrimary.withValues(
+                                  alpha: 0.4,
+                                )
+                                : AppColors.authButtonPrimary.withValues(
+                                  alpha: 0.2,
+                                ),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                         spreadRadius: widget.onPressed != null ? 1 : 0,
@@ -198,7 +197,10 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
                             child: Opacity(
                               opacity: 0.1,
                               child: Transform.translate(
-                                offset: Offset(_shimmerAnimation.value * 200, 0),
+                                offset: Offset(
+                                  _shimmerAnimation.value * 200,
+                                  0,
+                                ),
                                 child: Container(
                                   width: 100,
                                   decoration: BoxDecoration(
@@ -219,26 +221,28 @@ class _AuthPrimaryButtonState extends State<AuthPrimaryButton>
                         ),
                       // Button content
                       Center(
-                        child: widget.isLoading
-                            ? SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                              AppColors.textWhite,
-                            ),
-                          ),
-                        )
-                            : Text(
-                          widget.text,
-                          style: GoogleFonts.libreBaskerville(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primary,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
+                        child:
+                            widget.isLoading
+                                ? SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
+                                          AppColors.textWhite,
+                                        ),
+                                  ),
+                                )
+                                : Text(
+                                  widget.text,
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primary,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
                       ),
                     ],
                   ),

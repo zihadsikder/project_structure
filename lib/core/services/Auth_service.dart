@@ -9,7 +9,7 @@ class AuthService {
   static const String _guestModeKey = 'isGuestMode';
   static const String _uidKey = "userID";
 
-  static late SharedPreferences _preferences;
+  static SharedPreferences? _preferences;
   static String? _token;
   static String? _userRole;
   static String? _uid;
@@ -19,8 +19,8 @@ class AuthService {
   static Future<void> init() async {
     try {
       _preferences = await SharedPreferences.getInstance();
-      _token = _preferences.getString(_tokenKey);
-      _userRole = _preferences.getString(_roleKey);
+      _token = _preferences?.getString(_tokenKey);
+      _userRole = _preferences?.getString(_roleKey);
       AppLoggerHelper.info(
         'AuthService Initialized: Token exists = ${hasToken()}',
       );
@@ -40,17 +40,18 @@ class AuthService {
   static Future<void> setGuestMode(bool value) async {
     try {
       if (_preferences == null) await init();
-      await _preferences!.setBool(_guestModeKey, value);
+      await _preferences?.setBool(_guestModeKey, value);
       _isGuestMode = value;
       log('Guest mode set to: $value');
     } catch (e) {
       log('Error setting guest mode: $e');
     }
   }
+
   static Future<void> saveUID(String uid) async {
     try {
       if (_preferences == null) await init();
-      await _preferences!.setString(_uidKey, uid);
+      await _preferences?.setString(_uidKey, uid);
       _uid = uid;
       log("Saved UID: $uid");
     } catch (e) {
@@ -58,20 +59,21 @@ class AuthService {
     }
   }
 
-
   static Future<void> clearGuestMode() async {
     try {
       if (_preferences == null) await init();
-      await _preferences!.remove(_guestModeKey);
+      await _preferences?.remove(_guestModeKey);
       _isGuestMode = false;
     } catch (e) {
       log('Error clearing guest mode: $e');
     }
   }
+
   /// Save the token to local storage
   static Future<void> saveToken(String token) async {
     try {
-      await _preferences.setString(_tokenKey, token);
+      if (_preferences == null) await init();
+      await _preferences?.setString(_tokenKey, token);
       _token = token;
       AppLoggerHelper.info('Token saved successfully');
     } catch (e) {
@@ -82,7 +84,8 @@ class AuthService {
   /// Save the user role to local storage
   static Future<void> saveRole(String role) async {
     try {
-      await _preferences.setString(_roleKey, role);
+      if (_preferences == null) await init();
+      await _preferences?.setString(_roleKey, role);
       _userRole = role;
       AppLoggerHelper.info('User Role saved: $role');
     } catch (e) {
@@ -93,7 +96,8 @@ class AuthService {
   /// Clear authentication data (for logout or clearing auth data)
   static Future<void> logoutUser() async {
     try {
-      await _preferences.clear();
+      if (_preferences == null) await init();
+      await _preferences?.clear();
       _token = null;
       _userRole = null;
       AppLoggerHelper.info('User logged out successfully');
