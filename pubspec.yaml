@@ -23,7 +23,7 @@ dependencies:
   # Icons
   cupertino_icons: ^1.0.8
   # State Management
-  get: ^4.6.6
+  get: ^4.7.3
   gap: ^3.0.1
   flutter_svg:
   pinput:
