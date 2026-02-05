@@ -1,96 +1,118 @@
 import 'package:flutter/material.dart';
 
-const double kFigmaDesignWidth = 390;
-const double kFigmaDesignHeight = 844;
-const double kFigmaDesignStatusBar = 0;
-
 enum DeviceType { mobile, tablet, desktop }
 
-typedef ResponsiveBuild =
-Widget Function(
+typedef ResponsiveBuild = Widget Function(
     BuildContext context,
     Orientation orientation,
     DeviceType deviceType,
     );
 
+/// ------------------------------------------------------------
+/// Extensions
+/// ------------------------------------------------------------
+
 extension ResponsiveExtension on num {
-  double get w => (this * SizeUtils.width) / kFigmaDesignWidth;
-  double get h => (this * SizeUtils.height) / kFigmaDesignHeight;
-  double get sp => (this * SizeUtils.width) / kFigmaDesignWidth;
-  double get r =>
-      (this * SizeUtils.width) / kFigmaDesignWidth; // Radius based on width
+  double get w => this * SizeUtils.scaleWidth;
+  double get h => this * SizeUtils.scaleHeight;
+  double get sp => this * SizeUtils.scaleWidth;
 }
 
 extension FormatExtension on double {
   double toFixed(int fractionDigits) =>
       double.parse(toStringAsFixed(fractionDigits));
-  double nonZero({double defaultValue = 0.0}) => this > 0 ? this : defaultValue;
-  String toFormattedString({int fractionDigits = 2}) =>
-      toStringAsFixed(fractionDigits);
+
+  double nonZero({double defaultValue = 0.0}) =>
+      this > 0 ? this : defaultValue;
 }
+
 
 class Sizer extends StatelessWidget {
   const Sizer({super.key, required this.builder});
+
   final ResponsiveBuild builder;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return OrientationBuilder(
-          builder: (context, orientation) {
-            SizeUtils.setScreenSize(constraints, orientation, context);
-            return builder(context, orientation, SizeUtils.deviceType);
-          },
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        SizeUtils.setScreenSize(orientation, context);
+        return builder(
+          context,
+          orientation,
+          SizeUtils.deviceType,
         );
       },
     );
   }
 }
 
+/// ------------------------------------------------------------
+/// Size Utils (Viewport based – NO Figma)
+/// ------------------------------------------------------------
+
 class SizeUtils {
-  static late BoxConstraints boxConstraints;
   static late Orientation orientation;
   static late DeviceType deviceType;
-  static late double width;
-  static late double height;
+
+  static late double screenWidth;
+  static late double screenHeight;
+
+  /// scaling factors (relative)
+  static late double scaleWidth;
+  static late double scaleHeight;
+
   static late EdgeInsets safeAreaPadding;
+
   static bool debugMode = false;
+
   static void setScreenSize(
-      BoxConstraints constraints,
       Orientation currentOrientation,
       BuildContext context,
       ) {
-    boxConstraints = constraints;
     orientation = currentOrientation;
+
+    /// 🔥 View based size (most accurate)
+    final view = View.of(context);
+
+    screenWidth =
+        (view.physicalSize.width / view.devicePixelRatio)
+            .nonZero(defaultValue: 360);
+
+    screenHeight =
+        (view.physicalSize.height / view.devicePixelRatio)
+            .nonZero(defaultValue: 640);
+
     safeAreaPadding = MediaQuery.of(context).padding;
 
-    if (orientation == Orientation.portrait) {
-      width = boxConstraints.maxWidth.nonZero(defaultValue: kFigmaDesignWidth);
-      height = boxConstraints.maxHeight.nonZero();
-    } else {
-      width = boxConstraints.maxHeight.nonZero(defaultValue: kFigmaDesignWidth);
-      height = boxConstraints.maxWidth.nonZero();
-    }
-    if (width >= 1200) {
+    /// Base scale = 1.0 (no figma dependency)
+    scaleWidth = screenWidth / screenWidth;
+    scaleHeight = screenHeight / screenHeight;
+
+    /// Device type
+    if (screenWidth >= 1200) {
       deviceType = DeviceType.desktop;
-    } else if (width >= 600) {
+    } else if (screenWidth >= 600) {
       deviceType = DeviceType.tablet;
     } else {
       deviceType = DeviceType.mobile;
     }
+
     if (debugMode) debugPrintInfo();
   }
 
   static void debugPrintInfo() {
-    debugPrint("Device Width: $width");
-    debugPrint("Device Height: $height");
-    debugPrint("Safe Area Padding: $safeAreaPadding");
+    debugPrint("Screen Width: $screenWidth");
+    debugPrint("Screen Height: $screenHeight");
+    debugPrint("Safe Area: $safeAreaPadding");
     debugPrint("Device Type: $deviceType");
     debugPrint("Orientation: $orientation");
   }
 
-  static double adaptivePadding({
+  static bool get isPortrait => orientation == Orientation.portrait;
+  static bool get isLandscape => orientation == Orientation.landscape;
+
+  static double adaptiveValue({
     required double mobile,
     required double tablet,
     required double desktop,
@@ -104,7 +126,4 @@ class SizeUtils {
         return mobile;
     }
   }
-
-  static bool get isPortrait => orientation == Orientation.portrait;
-  static bool get isLandscape => orientation == Orientation.landscape;
 }
