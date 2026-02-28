@@ -20,7 +20,7 @@ class ChatListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: CustomText(text: AppText.chat.tr)),
+      appBar: AppBar(title: CustomText(text: 'Chat')),
       body: Column(
         children: [
           /// Search bar
@@ -99,7 +99,7 @@ class ChatListScreen extends StatelessWidget {
               if (chats.isEmpty) {
                 return Center(
                   child: CustomText(
-                    text: AppText.noChatsFound.tr,
+                    text: 'No Chat Found',
                     color: Colors.grey,
                     fontSize: 14.sp,
                   ),

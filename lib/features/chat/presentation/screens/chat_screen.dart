@@ -9,7 +9,7 @@ import '../../../../core/utils/constants/app_sizer.dart';
 
 import '../../../profile/controller/profile_controller.dart';
 import '../../controller/chat_controller.dart';
-import '../../controller/chat_list_controller.dart';
+
 import '../widgets/message_input_box.dart';
 import '../widgets/message_sent_by_me.dart';
 import '../widgets/recieve_message.dart';
@@ -105,14 +105,14 @@ class _ChatScreenState extends State<ChatScreen> {
                         Icon(
                           Icons.chat_bubble_outline_rounded,
                           size: 64.sp,
-                          color: AppColors.textTertiary.withOpacity(0.5),
+                          color: AppColors.textBlack.withOpacity(0.5),
                         ),
                         const Gap(16),
                         CustomText(
                           text:
                           "No messages yet.\nSay hi to start the conversation!",
                           textAlign: TextAlign.center,
-                          color: AppColors.textTertiary,
+                          color: AppColors.textSecondary,
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w500,
                         ),

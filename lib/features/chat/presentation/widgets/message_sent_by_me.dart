@@ -1,5 +1,7 @@
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../../../../core/utils/constants/app_colors.dart';
 import '../../../../core/utils/constants/app_sizer.dart';
 import 'package:gat/features/chat/presentation/widgets/view_image_screen.dart';
 import 'package:get/get.dart';
