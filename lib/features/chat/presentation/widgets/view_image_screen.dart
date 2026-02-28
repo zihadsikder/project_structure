@@ -25,10 +25,13 @@ class ViewImageScreen extends StatelessWidget {
               ),
               SizedBox(height: 80.h),
               imageUrl?.isNotEmpty == true
-                  ? Image.network(
-                imageUrl!,
+                  ? CachedNetworkImage(
+                imageUrl: imageUrl!,
                 fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => Image.asset(
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                errorWidget: (context, url, error) => Image.asset(
                   "assets/images/no_image.jpg",
                   fit: BoxFit.contain,
                 ),

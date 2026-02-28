@@ -17,8 +17,8 @@ class ChatController extends GetxController {
   final WebSocketClient socketClient = WebSocketClient();
   late final ProfileController profileController;
   final ScrollController scrollController = ScrollController();
-  final Box _chatBox = Hive.box('chatMessages');
-
+  RxString activePeerId = "".obs;
+  late final Box _chatBox;
   // Observables
   var messages = <Map<String, dynamic>>[].obs;
   RxBool showAttachIcon = true.obs;
@@ -27,14 +27,16 @@ class ChatController extends GetxController {
   RxString generatedImageLink = "".obs;
   RxBool isConnected = false.obs;
   RxBool isLoadingMore = false.obs;
+  RxBool isLoadingInitial = false.obs;
   RxBool hasMore = true.obs;
   RxString lastMessageId = "".obs;
-  static const int _pageSize = 20; // Load 20 messages per page
+  RxBool isSending = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     profileController = Get.find<ProfileController>();
+    _chatBox = Hive.box('chatMessages');
     _initSocketConnection();
     _setupScrollListener();
   }
@@ -51,7 +53,9 @@ class ChatController extends GetxController {
 
   void _setupScrollListener() {
     scrollController.addListener(() {
-      if (scrollController.position.pixels <= scrollController.position.minScrollExtent + 50 &&
+      // In a reversed list (reverse: true), maxScrollExtent is the top of the chat
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 100 &&
           !isLoadingMore.value &&
           hasMore.value) {
         _loadMoreMessages();
@@ -60,31 +64,62 @@ class ChatController extends GetxController {
   }
 
   Future<void> createChatRoom({required String user2Id}) async {
-    final userId = profileController.profileDataModel.value.data?.id ?? '';
+    final userId =
+        profileController.profileDataModel.value.data?.id?.toString() ?? '';
+
+    log(
+      "🧩 createChatRoom() -> me=$userId, peer=$user2Id, prevRoom=${roomId.value}, prevPeer=${activePeerId.value}",
+    );
+
     if (userId.isEmpty || user2Id.isEmpty) {
-      log("⚠️ User ID or user2Id not found, cannot join room.");
+      log("⚠️ Missing IDs. me=$userId peer=$user2Id");
+      isLoadingInitial.value = false;
       return;
     }
-    log("📤 Sending joinRoom: user1Id=$userId, user2Id=$user2Id");
+
+    // if already chatting with same peer, don't rejoin
+    if (activePeerId.value == user2Id && roomId.value.isNotEmpty) {
+      log("ℹ️ Same peer already active. Skip joinRoom.");
+      return;
+    }
+
+    isLoadingInitial.value = true;
+
+    // reset state
+    messages.clear();
+    roomId.value = "";
+    lastMessageId.value = "";
+    hasMore.value = true;
+
+    activePeerId.value = user2Id;
+
+    log("📤 joinRoom -> me=$userId peer=$user2Id");
     socketClient.joinRoom(userId, user2Id);
-    _loadCachedMessages();
+
+    // Load cache only AFTER roomId known (otherwise cache key empty)
+    // So remove _loadCachedMessages() here
   }
 
   void _loadCachedMessages() {
     if (_chatBox.containsKey(roomId.value) && messages.isEmpty) {
-      final cachedMessages = List<Map<String, dynamic>>.from(_chatBox.get(roomId.value));
-      messages.value = cachedMessages.reversed.toList(); // Load in reverse order for bottom-newest
+      final cachedMessages = List<Map<String, dynamic>>.from(
+        _chatBox.get(roomId.value),
+      );
+      messages.value = cachedMessages; // Store newest first
       if (messages.isNotEmpty) {
-        lastMessageId.value = messages.first['id']; // Use first ID for pagination (oldest)
+        lastMessageId.value =
+        messages.last['id']; // Oldest message ID for next load
       }
     }
   }
 
   void _saveMessagesToCache() {
-    if (roomId.value.isNotEmpty) {
-      _chatBox.put(roomId.value, messages.reversed.toList()); // Save in reverse order
+    if (cacheRoomId.isNotEmpty) {
+      _chatBox.put(cacheRoomId, messages.toList()); // Save as newest first
     }
   }
+
+  String get cacheRoomId => roomId.value;
 
   void _loadMoreMessages() async {
     if (lastMessageId.value.isEmpty || !hasMore.value) return;
@@ -97,23 +132,34 @@ class ChatController extends GetxController {
   Future<void> sendMessage({
     required String message,
     required String receiverId,
-    String? image,
   }) async {
-    if (message.isEmpty && (image == null || image.isEmpty) && selectedImage.value.isEmpty) return;
+    if ((message.trim().isEmpty && selectedImage.value.isEmpty) ||
+        isSending.value) {
+      return;
+    }
 
     try {
-      String? imageUrl = image;
-      if (selectedImage.value.isNotEmpty && (image == null || image.isEmpty)) {
+      isSending.value = true;
+      String? imageUrl;
+      if (selectedImage.value.isNotEmpty) {
         bool uploadSuccess = await generateImageLink();
+
         if (uploadSuccess && generatedImageLink.value.isNotEmpty) {
           imageUrl = generatedImageLink.value;
         } else {
-          log("❌ Failed to upload image, sending message without image");
+          log(
+            "❌ Failed to upload image, continuing with text only or aborting if no text",
+          );
+          if (message.trim().isEmpty) {
+            isSending.value = false;
+            return;
+          }
         }
       }
 
       if (roomId.value.isEmpty) {
         log("⚠️ chatroomId is empty, cannot send message.");
+        isSending.value = false;
         return;
       }
 
@@ -132,9 +178,10 @@ class ChatController extends GetxController {
       textController.clear();
       selectedImage.value = "";
       generatedImageLink.value = "";
-      showAttachIcon.value = true;
     } catch (e) {
       log("❌ Send Message Error: $e");
+    } finally {
+      isSending.value = false;
     }
   }
 
@@ -171,10 +218,12 @@ class ChatController extends GetxController {
       final response = await dioClient.post(
         AppUrls.generateImageLink,
         data: formData,
-        options: dio.Options(headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Bearer ${AuthService.token}',
-        }),
+        options: dio.Options(
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': 'Bearer ${AuthService.token}',
+          },
+        ),
       );
 
       log("📤 Upload Response: ${response.statusCode} - ${response.data}");
@@ -182,10 +231,11 @@ class ChatController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = response.data;
         if (responseData is Map<String, dynamic>) {
-          final imageLink = responseData["data"]?["file"] ??
-              responseData["file"] ??
-              responseData["url"] ??
-              responseData["chatImage"];
+          final imageLink =
+              responseData["data"]?["file"] ??
+                  responseData["file"] ??
+                  responseData["url"] ??
+                  responseData["chatImage"];
           if (imageLink != null && imageLink.isNotEmpty) {
             generatedImageLink.value = imageLink;
             log("✅ Image uploaded successfully: $imageLink");
@@ -193,7 +243,9 @@ class ChatController extends GetxController {
           }
         }
       }
-      log("❌ Image upload failed: ${response.data?["message"] ?? 'No message'}");
+      log(
+        "❌ Image upload failed: ${response.data?["message"] ?? 'No message'}",
+      );
       return false;
     } catch (e) {
       log("❌ Image upload failed: $e");
@@ -213,35 +265,56 @@ class ChatController extends GetxController {
 
       switch (decodedMessage['type']) {
         case 'loadMessages':
-          final conversation = decodedMessage['conversation'] ?? decodedMessage;
-          log("📥 Raw conversation: $conversation");
-          if (conversation != null) {
-            roomId.value = conversation['id'] ??
-                (conversation['messages']?.isNotEmpty == true
-                    ? conversation['messages'][0]['conversationId']
-                    : roomId.value);
-            log("📥 Set roomId: ${roomId.value}");
-            hasMore.value = decodedMessage['hasMore'] ?? false;
-            messages.clear();
-            final allMessages = (conversation['messages'] as List?)?.cast<Map<String, dynamic>>() ?? [];
-            messages.value = allMessages.reversed.toList(); // Reverse for bottom-newest display
-            if (messages.isNotEmpty) {
-              lastMessageId.value = messages.first['id']; // Oldest message ID for next load
+          try {
+            // server: {"type":"loadMessages","conversationId":"...","messages":[...],"hasMore":false}
+            final convId = decodedMessage['conversationId']?.toString() ?? '';
+            final msgList = (decodedMessage['messages'] as List? ?? [])
+                .map((e) => Map<String, dynamic>.from(e as Map))
+                .toList();
+
+            final incomingHasMore = decodedMessage['hasMore'] == true;
+
+            log(
+              "✅ loadMessages -> conversationId=$convId, messages=${msgList.length}, hasMore=$incomingHasMore",
+            );
+
+            if (convId.isNotEmpty) {
+              roomId.value = convId;
             }
+
+            messages.clear();
+            // server seems sending newest-first already; if not sure, sort by createdAt
+            messages.addAll(msgList);
+
+            hasMore.value = incomingHasMore;
+
+            if (messages.isNotEmpty) {
+              lastMessageId.value = messages.last['id']?.toString() ?? '';
+            } else {
+              lastMessageId.value = '';
+            }
+
             _saveMessagesToCache();
-            _scrollToBottom();
-          } else {
-            log("⚠️ No conversation data in loadMessages response");
+          } catch (e) {
+            log("❌ loadMessages parse error: $e");
+          } finally {
+            isLoadingInitial.value = false;
           }
           break;
 
         case 'loadMoreMessagesResponse':
           isLoadingMore.value = false;
           hasMore.value = decodedMessage['hasMore'] ?? false;
-          final newMessages = (decodedMessage['messages'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+          final newMessages =
+              (decodedMessage['messages'] as List?)
+                  ?.cast<Map<String, dynamic>>() ??
+                  [];
           if (newMessages.isNotEmpty) {
-            messages.insertAll(0, newMessages.reversed.toList()); // Add older messages at the top
-            lastMessageId.value = newMessages.first['id']; // Update with oldest message ID
+            messages.addAll(
+              newMessages,
+            ); // Append older messages at the end of newest-first list
+            lastMessageId.value =
+            messages.last['id']; // Update with oldest message ID
             _saveMessagesToCache();
           }
           break;
@@ -250,14 +323,27 @@ class ChatController extends GetxController {
         case 'messageSent':
           final message = decodedMessage['message'];
           if (message != null && message is Map<String, dynamic>) {
+            final conversationId = message['conversationId'];
+            if (conversationId != null && roomId.value != conversationId) {
+              roomId.value = conversationId;
+              log("📥 Updated roomId from message: ${roomId.value}");
+            }
+
             final messageId = message['id'];
-            if (messageId != null && !messages.any((msg) => msg['id'] == messageId)) {
-              messages.add(message); // Add new message to the end
+            if (messageId != null &&
+                !messages.any((msg) => msg['id'] == messageId)) {
+              messages.insert(
+                0,
+                message,
+              ); // Add new message to the beginning (newest first)
               _saveMessagesToCache();
               log("📥 Added new message with id: $messageId");
-              _scrollToBottom();
+              // Scroll to bottom is not needed for reversed list usually,
+              // but we might want to jump to 0 if user is far up
             } else {
-              log("⚠️ Duplicate or null message id detected, skipping: $messageId");
+              log(
+                "⚠️ Duplicate or null message id detected, skipping: $messageId",
+              );
             }
           }
           break;
@@ -267,41 +353,7 @@ class ChatController extends GetxController {
       }
     } catch (e) {
       log("❌ Failed to handle message: $e");
-    }
-  }
-
-  void _scrollToBottom() {
-    if (scrollController.hasClients) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      });
-    }
-  }
-
-  void _addMessage(
-      String messageId,
-      String content,
-      String senderId,
-      String conversationId,
-      bool isRead,
-      String updatedAt,
-      String fileUrl,
-      ) {
-    if (!messages.any((msg) => msg['id'] == messageId)) {
-      messages.add({
-        'id': messageId,
-        'content': content,
-        'senderId': senderId,
-        'conversationId': conversationId,
-        'isRead': isRead,
-        'updatedAt': updatedAt,
-        'file': fileUrl,
-      });
-      debugPrint("💬 Added message: $content (${fileUrl.isNotEmpty ? '📎 with file' : ''})");
+      isLoadingInitial.value = false;
     }
   }
 

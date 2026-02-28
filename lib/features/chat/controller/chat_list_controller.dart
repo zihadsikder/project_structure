@@ -11,8 +11,8 @@ class ChatListController extends GetxController {
   Rx<GetChatListModel?> chatListDetails = Rx(null);
   var searchQuery = ''.obs;
   Timer? _refreshTimer;
-
-  String? token = AuthService.token;
+  final isCreatingRoom = false.obs;
+  String? get token => AuthService.token;
 
   @override
   void onInit() {
@@ -59,10 +59,13 @@ class ChatListController extends GetxController {
           throw Exception('Unexpected response data format');
         }
       } else {
-        throw Exception('Failed to load chat list');
+        AppLoggerHelper.error(
+          "Failed to load chat list: ${response.errorMessage}",
+        );
+        throw Exception('Failed to load chat list: ${response.errorMessage}');
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e');
+      //Get.snackbar('Error', 'An error occurred: $e');
       AppLoggerHelper.error("Fetch error: $e");
     } finally {
       isLoading.value = false;
@@ -98,9 +101,9 @@ class ChatListController extends GetxController {
     return chats
         .where(
           (chat) =>
-              (chat.user?.name.toLowerCase().contains(query) ?? false) ||
-              (chat.user?.email.toLowerCase().contains(query) ?? false),
-        )
+      (chat.user?.name?.toLowerCase().contains(query) ?? false) ||
+          (chat.user?.email?.toLowerCase().contains(query) ?? false),
+    )
         .toList();
   }
 }

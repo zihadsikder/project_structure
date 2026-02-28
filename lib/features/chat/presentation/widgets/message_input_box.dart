@@ -60,7 +60,7 @@ class MessageInputBox extends StatelessWidget {
                 child: TextField(
                   controller: chatController.textController,
                   textInputAction: TextInputAction.send,
-                  decoration:  InputDecoration(
+                  decoration: InputDecoration(
                     hintText: "Type a message...",
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none, // no border when enabled
@@ -68,16 +68,16 @@ class MessageInputBox extends StatelessWidget {
                     disabledBorder: InputBorder.none, // no border when disabled
                     filled: false, // no background fill
                     isDense: true, // reduces vertical padding (optional)
-                    contentPadding: EdgeInsets.symmetric(vertical: 8.h), // remove extra padding (optional)
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 8.h,
+                    ), // remove extra padding (optional)
                   ),
                   onSubmitted: (_) {
-                    if (receiverId.isNotEmpty) {
+                    if (receiverId.isNotEmpty &&
+                        !chatController.isSending.value) {
                       chatController.sendMessage(
                         message: chatController.textController.text,
                         receiverId: receiverId,
-                        image: chatController.generatedImageLink.value.isNotEmpty
-                            ? chatController.generatedImageLink.value
-                            : null,
                       );
                     }
                   },
@@ -86,19 +86,28 @@ class MessageInputBox extends StatelessWidget {
             ),
 
             // Send button
-            IconButton(
-              icon: const Icon(Icons.send, color: Colors.white),
-              onPressed: () {
-                if (receiverId.isNotEmpty) {
-                  chatController.sendMessage(
-                    message: chatController.textController.text,
-                    receiverId: receiverId,
-                    image: chatController.generatedImageLink.value.isNotEmpty
-                        ? chatController.generatedImageLink.value
-                        : null,
-                  );
-                }
-              },
+            Obx(
+                  () => chatController.isSending.value
+                  ? Container(
+                padding: const EdgeInsets.all(12),
+                width: 48,
+                height: 48,
+                child: const CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+                  : IconButton(
+                icon: const Icon(Icons.send, color: Colors.white),
+                onPressed: () {
+                  if (receiverId.isNotEmpty) {
+                    chatController.sendMessage(
+                      message: chatController.textController.text,
+                      receiverId: receiverId,
+                    );
+                  }
+                },
+              ),
             ),
           ],
         ),

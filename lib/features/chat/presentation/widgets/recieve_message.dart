@@ -11,72 +11,102 @@ class ReceivedMessage extends StatelessWidget {
   final String? time;
   final String? image;
 
-  const ReceivedMessage({
-    super.key,
-    this.message,
-    this.time,
-    this.image,
-  });
+  const ReceivedMessage({super.key, this.message, this.time, this.image});
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Column(
-        children: [
-          if (image?.isNotEmpty == true) ...[
-            GestureDetector(
-              onTap: () => Get.to(() => ViewImageScreen(imageUrl: image)),
-              child: Image.network(
-                image!,
-                fit: BoxFit.fill,
-                height: 124.h,
-                width: 124.w,
-                errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              constraints: BoxConstraints(maxWidth: 280.w),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF1F1F1),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(4),
+                  bottomRight: Radius.circular(20),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(4),
+                  bottomRight: Radius.circular(20),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (image?.isNotEmpty == true)
+                      GestureDetector(
+                        onTap: () =>
+                            Get.to(() => ViewImageScreen(imageUrl: image)),
+                        child: CachedNetworkImage(
+                          imageUrl: image!,
+                          fit: BoxFit.cover,
+                          height: 200.h,
+                          width: double.infinity,
+                          placeholder: (context, url) => Container(
+                            height: 200.h,
+                            width: double.infinity,
+                            color: Colors.grey[200],
+                            child: const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            height: 100.h,
+                            width: 100.w,
+                            color: Colors.grey[200],
+                            child: const Icon(
+                              Icons.broken_image,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (message?.isNotEmpty == true)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        child: CustomText(
+                          text: message!,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-          ],
-
-          if (message?.isNotEmpty == true) ...[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 4),
-                  padding: const EdgeInsets.only(
-                    left: 30,
-                    right: 30,
-                    top: 8,
-                    bottom: 8,
-                  ),
-                  constraints: BoxConstraints(maxWidth: 260.w),
-                  decoration: const BoxDecoration(
-                    color: Color(0xffFAFAFA),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(4),
-                      topRight: Radius.circular(4),
-                      bottomRight: Radius.circular(4),
-                    ),
-                  ),
-                  child: CustomText(
-                    text: message!,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xff000000),
-                  ),
-                ),
-                CustomText(
-                  text: _formatTime(time),
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.grey,
-                ),
-              ],
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: CustomText(
+                text: _formatTime(time),
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w400,
+                color: AppColors.textSecondary,
+              ),
             ),
-            const SizedBox(height: 8),
           ],
-        ],
+        ),
       ),
     );
   }

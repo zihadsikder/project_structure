@@ -21,13 +21,13 @@ class ChatScreen extends StatefulWidget {
     this.user2ndId,
     this.userName,
     this.profileImage,
-    this.role,
+
   });
 
   final String? user2ndId;
   final String? userName;
   final String? profileImage;
-  final String? role;
+
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -35,8 +35,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final ChatController chatController = Get.find<ChatController>();
-  final ProfileController profileController = Get.put(ProfileController());
-  final ChatListController chatListController = Get.put(ChatListController());
+  final ProfileController profileController = Get.find<ProfileController>();
 
 
   @override
@@ -58,43 +57,34 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: AppColors.primary,
-        title: InkWell(
-          onTap: () {
-            //Get.toNamed(
-              //AppRoute.seekerProfileScreen,
-             // arguments: {'formScreen': 'chat', 'id': widget.user2ndId},
-            //);
-          },
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: widget.profileImage?.isNotEmpty == true
-                    ? NetworkImage(widget.profileImage!)
-                    : null,
-                backgroundColor: Colors.white,
-                child: widget.profileImage?.isEmpty != false
-                    ? CustomText(
-                  text: widget.userName?.isNotEmpty == true
-                      ? widget.userName![0].toUpperCase()
-                      : "?",
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16.sp,
-                )
-                    : null,
-              ),
-              const Gap(8),
-              CustomText(
-                text: widget.userName ?? 'Unknown User',
+        title: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: widget.profileImage?.isNotEmpty == true
+                  ? NetworkImage(widget.profileImage!)
+                  : null,
+              backgroundColor: Colors.white,
+              child: widget.profileImage?.isEmpty != false
+                  ? CustomText(
+                text: widget.userName?.isNotEmpty == true
+                    ? widget.userName![0].toUpperCase()
+                    : "?",
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
                 fontSize: 16.sp,
-              ),
-            ],
-          ),
+              )
+                  : null,
+            ),
+            const Gap(8),
+            CustomText(
+              text: widget.userName ?? 'Unknown User',
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 16.sp,
+            ),
+          ],
         ),
-
       ),
       body: SafeArea(
         child: Column(
@@ -102,15 +92,44 @@ class _ChatScreenState extends State<ChatScreen> {
             /// Messages section
             Expanded(
               child: Obx(() {
-                if (chatController.messages.isEmpty && !chatController.isLoadingMore.value) {
+                if (chatController.isLoadingInitial.value &&
+                    chatController.messages.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
+                }
+
+                if (chatController.messages.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.chat_bubble_outline_rounded,
+                          size: 64.sp,
+                          color: AppColors.textTertiary.withOpacity(0.5),
+                        ),
+                        const Gap(16),
+                        CustomText(
+                          text:
+                          "No messages yet.\nSay hi to start the conversation!",
+                          textAlign: TextAlign.center,
+                          color: AppColors.textTertiary,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ],
+                    ),
+                  );
                 }
 
                 return ListView.builder(
                   controller: chatController.scrollController,
-                  reverse: false, // Latest message at the bottom
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  itemCount: chatController.messages.length +
+                  reverse: true, // Latest message at the bottom (index 0)
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 16,
+                  ),
+                  itemCount:
+                  chatController.messages.length +
                       (chatController.isLoadingMore.value ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (chatController.isLoadingMore.value &&
@@ -122,17 +141,21 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       );
                     }
-                    final message = chatController.messages[index]; // Use natural order
+                    final message = chatController.messages[index];
                     return message["senderId"] == userId
                         ? MessageSentByMe(
                       message: message['content'] ?? '',
                       time: message['updatedAt'] ?? '',
-                      image: message["file"]?.isNotEmpty == true ? message["file"] : null,
+                      image: message["file"]?.isNotEmpty == true
+                          ? message["file"]
+                          : null,
                     )
                         : ReceivedMessage(
                       message: message['content'] ?? '',
                       time: message['updatedAt'] ?? '',
-                      image: message["file"]?.isNotEmpty == true ? message["file"] : null,
+                      image: message["file"]?.isNotEmpty == true
+                          ? message["file"]
+                          : null,
                     );
                   },
                 );
@@ -142,39 +165,70 @@ class _ChatScreenState extends State<ChatScreen> {
             /// Selected image preview
             Align(
               alignment: Alignment.centerLeft,
-              child: Obx(() => chatController.selectedImage.isNotEmpty
-                  ? Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 10),
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 100.h,
-                      width: 100.w,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        image: DecorationImage(
-                          image: FileImage(File(chatController.selectedImage.value)),
-                          fit: BoxFit.fill,
+              child: Obx(
+                    () => chatController.selectedImage.isNotEmpty
+                    ? Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 10),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        height: 120.h,
+                        width: 120.w,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: AppColors.primary.withOpacity(0.3),
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                          image: DecorationImage(
+                            image: FileImage(
+                              File(chatController.selectedImage.value),
+                            ),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
-                    ),
-                    Positioned(
-                      right: 1,
-                      top: 2,
-                      child: GestureDetector(
-                        onTap: () {
-                          chatController.selectedImage.value = "";
-                        },
-                        child: const Icon(
-                          Icons.close,
-                          color: Colors.red,
+                      Positioned(
+                        right: -8,
+                        top: -8,
+                        child: GestureDetector(
+                          onTap: () {
+                            chatController.selectedImage.value = "";
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              color: AppColors.primary,
+                              size: 20,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-                  : const SizedBox.shrink()),
+                    ],
+                  ),
+                )
+                    : const SizedBox.shrink(),
+              ),
             ),
 
             /// Bottom input field
